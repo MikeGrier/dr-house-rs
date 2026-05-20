@@ -19,15 +19,6 @@ jobs:
           - os: windows-latest
             target: arm64
             node-arch: arm64
-          - os: ubuntu-latest
-            target: linux-x64
-            node-arch: x64
-          - os: macos-latest
-            target: darwin-x64
-            node-arch: x64
-          - os: macos-latest
-            target: darwin-arm64
-            node-arch: arm64
 
     runs-on: ${{ matrix.os }}
 
