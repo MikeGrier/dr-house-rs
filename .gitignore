@@ -13,6 +13,28 @@ target
 # Contains mutation testing data
 **/mutants.out*/
 
+# VS Code
+.vscode/
+.vscode-test/
+*.vsix
+
+# Node.js / npm
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TTD Runtime Binaries (downloaded at build time, not committed)
+crates/dr-house-extension/resources/ttd/
+!crates/dr-house-extension/resources/ttd/.gitkeep
+
 # RustRover
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore

@@ -1,0 +1,13 @@
+# Copyright (c) 2026, Michael Grier
+
+[workspace]
+members = [
+    "crates/dr-house-extension",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Mike Grier"]
+license = "MIT"
+repository = "https://github.com/MikeGrier/dr-house-rs"
