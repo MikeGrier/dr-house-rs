@@ -1,0 +1,93 @@
+name: Build Extension
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            target: x64
+          - os: windows-latest
+            target: arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect extension packaging layout
+        id: layout
+        shell: pwsh
+        run: |
+          if (Test-Path '.\extension\package.json') {
+            "skip=false" >> $env:GITHUB_OUTPUT
+            "workdir=extension" >> $env:GITHUB_OUTPUT
+            "ttd-output=extension/resources/ttd" >> $env:GITHUB_OUTPUT
+            "vsix-path=extension/*.vsix" >> $env:GITHUB_OUTPUT
+            Write-Host "Using extension/ workspace for packaging."
+          } elseif (Test-Path '.\package.json') {
+            "skip=false" >> $env:GITHUB_OUTPUT
+            "workdir=." >> $env:GITHUB_OUTPUT
+            "ttd-output=resources/ttd" >> $env:GITHUB_OUTPUT
+            "vsix-path=*.vsix" >> $env:GITHUB_OUTPUT
+            Write-Host "Using repository root workspace for packaging."
+          } else {
+            "skip=true" >> $env:GITHUB_OUTPUT
+            Write-Warning "No package.json found at extension/package.json or package.json. Skipping extension packaging."
+          }
+
+      - name: Install Node.js
+        if: steps.layout.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          architecture: x64
+
+      - name: Print packaging diagnostics
+        if: steps.layout.outputs.skip != 'true'
+        shell: pwsh
+        run: |
+          Write-Host "Target: ${{ matrix.target }}"
+          Write-Host "Working directory: ${{ steps.layout.outputs.workdir }}"
+          Write-Host "TTD output directory: ${{ steps.layout.outputs.ttd-output }}"
+          node --version
+          npm --version
+
+      - name: Download TTD debuggers (Windows only)
+        if: runner.os == 'Windows' && steps.layout.outputs.skip != 'true'
+        shell: pwsh
+        run: .\.github\scripts\download-ttd.ps1 -OutputPath '${{ steps.layout.outputs.ttd-output }}'
+
+      - name: Install dependencies
+        if: steps.layout.outputs.skip != 'true'
+        shell: pwsh
+        working-directory: ${{ steps.layout.outputs.workdir }}
+        run: |
+          if (Test-Path '.\package-lock.json') {
+            npm ci
+          } else {
+            Write-Warning "package-lock.json not found. Falling back to npm install."
+            npm install --no-audit --no-fund
+          }
+
+      - name: Package extension
+        if: steps.layout.outputs.skip != 'true'
+        working-directory: ${{ steps.layout.outputs.workdir }}
+        run: npx vsce package --target ${{ matrix.target }}
+
+      - name: Upload VSIX
+        if: steps.layout.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dr-house-ttd-${{ matrix.target }}
+          path: ${{ steps.layout.outputs.vsix-path }}

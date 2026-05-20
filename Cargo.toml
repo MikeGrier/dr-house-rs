@@ -1,0 +1,14 @@
+# Copyright (c) 2026, Michael Grier
+
+[workspace]
+resolver = "2"
+members = [
+    "crates/dr-house-ttd-decoder",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Mike Grier"]
+license = "MIT"
+repository = "https://github.com/MikeGrier/dr-house-rs"

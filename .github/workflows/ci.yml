@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect Node workspace
+        id: node
+        shell: pwsh
+        run: |
+          if (Test-Path '.\package.json') {
+            "has_package=true" >> $env:GITHUB_OUTPUT
+            Write-Host "Found package.json at repository root."
+          } else {
+            "has_package=false" >> $env:GITHUB_OUTPUT
+            Write-Warning "No package.json found. Skipping Node-based checks."
+          }
+
+      - name: Install Node.js
+        if: steps.node.outputs.has_package == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        if: steps.node.outputs.has_package == 'true'
+        shell: pwsh
+        run: |
+          if (Test-Path '.\package-lock.json') {
+            Write-Host "Using npm ci"
+            npm ci
+          } else {
+            Write-Warning "package-lock.json not found. Falling back to npm install."
+            npm install --no-audit --no-fund
+          }
+
+      - name: Run tests
+        if: steps.node.outputs.has_package == 'true'
+        shell: pwsh
+        run: |
+          $pkg = Get-Content .\package.json -Raw | ConvertFrom-Json
+          if ($pkg.scripts.test) {
+            npm test
+          } else {
+            Write-Host "No test script defined. Skipping."
+          }
+
+      - name: Run linter
+        if: steps.node.outputs.has_package == 'true'
+        shell: pwsh
+        run: |
+          $pkg = Get-Content .\package.json -Raw | ConvertFrom-Json
+          if ($pkg.scripts.lint) {
+            npm run lint
+          } else {
+            Write-Host "No lint script defined. Skipping."
+          }
+
+      - name: Build extension
+        if: steps.node.outputs.has_package == 'true'
+        shell: pwsh
+        run: |
+          $pkg = Get-Content .\package.json -Raw | ConvertFrom-Json
+          if ($pkg.scripts.build) {
+            npm run build
+          } else {
+            Write-Host "No build script defined. Skipping."
+          }
+
+  rust-quality:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Run clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Check formatting
+        run: cargo fmt -- --check
+
+      - name: Run tests
+        run: cargo test

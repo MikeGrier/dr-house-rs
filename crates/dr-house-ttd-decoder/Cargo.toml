@@ -1,0 +1,8 @@
+[package]
+name = "dr-house-ttd-decoder"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Rust bindings and decoder logic for the Windows Time Travel Debugger (TTD) replay API"
