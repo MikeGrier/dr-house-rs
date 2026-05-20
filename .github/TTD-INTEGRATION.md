@@ -27,7 +27,7 @@ Extract platform-specific MSIX files
     ↓
 Extract TTD DLLs from each MSIX
     ↓
-Organize into crates/dr-house-extension/resources/ttd/{arch}/
+Organize into extension/resources/ttd/{arch}/
     ↓
 Package extension VSIX (includes TTD binaries)
 ```
@@ -37,7 +37,7 @@ Package extension VSIX (includes TTD binaries)
 After download, the TTD binaries are organized by platform:
 
 ```
-crates/dr-house-extension/resources/ttd/
+extension/resources/ttd/
 ├── x64/
 │   ├── TTDReplay.dll        (Time Travel Debugger replay engine)
 │   └── TTDReplayCPU.dll     (CPU-specific replay support)
@@ -62,10 +62,9 @@ crates/dr-house-extension/resources/ttd/
    - Same extraction as x64
    - Packages VSIX for arm64 target
 
-3. **Non-Windows Builds** (Linux, macOS):
+3. **Non-Windows Builds**:
    - TTD download is skipped (`if: runner.os == 'Windows'`)
-   - Extension builds without TTD binaries
-   - Useful for basic functionality; full TTD features require Windows
+   - Only Windows runners are used; this note is kept for reference
 
 ## Scripts
 
@@ -151,8 +150,8 @@ bash ./.github/scripts/verify-ttd.sh
 The TTD binaries are **not committed** to the repository:
 
 ```
-crates/dr-house-extension/resources/ttd/
-!crates/dr-house-extension/resources/ttd/.gitkeep
+extension/resources/ttd/
+!extension/resources/ttd/.gitkeep
 ```
 
 The `.gitkeep` file ensures the directory structure is preserved in version control while excluding the large binary files.
@@ -182,8 +181,8 @@ The `.gitkeep` file ensures the directory structure is preserved in version cont
 ### Missing DLLs After Build
 
 1. **Verify the script ran** — Check GitHub Actions logs for download-ttd.ps1 output
-2. **Manual download** — Run `.\github\scripts\download-ttd.ps1` locally
-3. **Check directory** — Verify `crates/dr-house-extension/resources/ttd/` contains extracted files
+2. **Manual download** — Run `\.github\scripts\download-ttd.ps1` locally
+3. **Check directory** — Verify `extension/resources/ttd/` contains extracted files
 
 ## Future Enhancements
 

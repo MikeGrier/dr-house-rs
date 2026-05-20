@@ -18,7 +18,7 @@
 #>
 
 param(
-    [string]$OutputPath = './crates/dr-house-extension/resources/ttd'
+    [string]$OutputPath = './extension/resources/ttd'
 )
 
 $ErrorActionPreference = 'Stop'

@@ -3,7 +3,7 @@
 
 set -e
 
-TTD_DIR="./crates/dr-house-extension/resources/ttd"
+TTD_DIR="./extension/resources/ttd"
 
 echo "TTD Binary Verification"
 echo "======================"

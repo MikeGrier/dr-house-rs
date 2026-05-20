@@ -32,8 +32,8 @@ yarn-error.log*
 Thumbs.db
 
 # TTD Runtime Binaries (downloaded at build time, not committed)
-crates/dr-house-extension/resources/ttd/
-!crates/dr-house-extension/resources/ttd/.gitkeep
+extension/resources/ttd/
+!extension/resources/ttd/.gitkeep
 
 # RustRover
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

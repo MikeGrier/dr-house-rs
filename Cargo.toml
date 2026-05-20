@@ -1,8 +1,9 @@
 # Copyright (c) 2026, Michael Grier
 
 [workspace]
+resolver = "2"
 members = [
-    "crates/dr-house-extension",
+    "crates/dr-house-ttd-decoder",
 ]
 
 [workspace.package]

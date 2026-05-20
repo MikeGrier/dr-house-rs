@@ -20,12 +20,14 @@ This is a multi-workspace Rust + TypeScript project:
 ```
 dr-house-rs/
 ├── crates/
-│   └── dr-house-extension/          # VS Code extension (TypeScript)
-├── Cargo.toml                        # Workspace configuration
-├── package.json                      # Root npm configuration
+│   └── dr-house-ttd-decoder/        # Rust TTD decoder library
+├── extension/                        # VS Code extension (TypeScript + resources)
+│   └── resources/
+│       └── ttd/                      # TTD binaries (downloaded at build time)
+├── Cargo.toml                        # Rust workspace configuration
 └── .github/
     ├── workflows/                    # CI/CD pipelines
-    └── copilot-instructions.md       # GitHub Copilot guidance
+    └── scripts/                      # Build helper scripts
 ```
 
 ### Prerequisites
