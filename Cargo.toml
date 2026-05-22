@@ -4,6 +4,7 @@
 resolver = "2"
 members = [
     "crates/dr-house-ttd-decoder",
+    "crates/dr-house-symbols",
 ]
 
 [workspace.package]

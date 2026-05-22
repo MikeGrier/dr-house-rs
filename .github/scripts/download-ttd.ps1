@@ -5,12 +5,18 @@
     
 .DESCRIPTION
     This script fetches the latest TTD package from Microsoft, extracts the
-    necessary DLLs for x64, x86, and ARM64 platforms, and organizes them for
-    distribution with the Dr House extension.
+    full recording and replay binaries for x64 and ARM64 platforms, and
+    organizes them for distribution with the Dr House extension.
+
+    Each platform package includes both the recorder (TTD.exe, TTDInject.exe,
+    TTDLoader.dll, TTDRecord.dll, TTDRecordCPU.dll, TTDRecordUI.dll,
+    ProcLaunchMon.sys) and the replay engine (TTDReplay.dll, TTDReplayCPU.dll).
+
+    x86 is not supported.
     
 .PARAMETER OutputPath
     The directory where extracted TTD binaries will be placed.
-    Default: './crates/dr-house-extension/resources/ttd'
+    Default: './extension/resources/ttd'
     
 .EXAMPLE
     ./download-ttd.ps1
@@ -69,47 +75,44 @@ try {
     Expand-Archive -Path $bundlePath -DestinationPath $bundleExtractDir -Force
     Write-Host "Extracted bundle contents" -ForegroundColor $successColor
     
-    # Step 5: Extract DLLs from each platform's MSIX
-    Write-Host "`nStep 5: Extracting DLLs from MSIX files..." -ForegroundColor $infoColor
-    
+    # Step 5: Extract binaries from each platform's MSIX
+    Write-Host "`nStep 5: Extracting binaries from MSIX files..." -ForegroundColor $infoColor
+
     $platforms = @(
-        @{ name = 'x64'; msix = 'TTD-x64.msix' },
-        @{ name = 'x86'; msix = 'TTD-x86.msix' },
+        @{ name = 'x64';   msix = 'TTD-x64.msix'   },
         @{ name = 'arm64'; msix = 'TTD-ARM64.msix' }
     )
-    
+
     $outputDir = $OutputPath
     if (-not (Test-Path $outputDir)) {
         New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
     }
-    
+
+    $binaryExtensions = @('.dll', '.exe', '.sys')
+
     foreach ($platform in $platforms) {
         Write-Host "  Processing $($platform.name)..." -ForegroundColor $infoColor
-        
+
         $msixPath = Join-Path $bundleExtractDir $platform.msix
         if (-not (Test-Path $msixPath)) {
             Write-Host "    Warning: $($platform.msix) not found, skipping" -ForegroundColor 'Yellow'
             continue
         }
-        
+
         $msixExtractDir = Join-Path $tempDir "msix-$($platform.name)"
         New-Item -ItemType Directory -Path $msixExtractDir -Force | Out-Null
         Expand-Archive -Path $msixPath -DestinationPath $msixExtractDir -Force
-        
-        # Find and copy the DLLs
-        $dllFiles = @('TTDReplay.dll', 'TTDReplayCPU.dll')
+
         $platformOutputDir = Join-Path $outputDir $platform.name
         New-Item -ItemType Directory -Path $platformOutputDir -Force | Out-Null
-        
-        foreach ($dll in $dllFiles) {
-            $foundDll = Get-ChildItem -Path $msixExtractDir -Filter $dll -Recurse | Select-Object -First 1
-            if ($foundDll) {
-                Copy-Item -Path $foundDll.FullName -Destination $platformOutputDir -Force
-                Write-Host "    Copied $dll" -ForegroundColor $successColor
-            } else {
-                Write-Host "    Warning: $dll not found in MSIX" -ForegroundColor 'Yellow'
+
+        # Copy all binaries from the root of the MSIX only (skip x86 subdirectory)
+        Get-ChildItem -Path $msixExtractDir -File |
+            Where-Object { $binaryExtensions -contains $_.Extension.ToLower() } |
+            ForEach-Object {
+                Copy-Item -Path $_.FullName -Destination $platformOutputDir -Force
+                Write-Host "    Copied $($_.Name)" -ForegroundColor $successColor
             }
-        }
     }
     
     Write-Host "`n✓ TTD binaries successfully downloaded and extracted" -ForegroundColor $successColor
