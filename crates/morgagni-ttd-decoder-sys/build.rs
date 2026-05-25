@@ -56,6 +56,16 @@ fn main() {
     println!("cargo:rerun-if-changed=cpp/shim.cpp");
     println!("cargo:rerun-if-changed=cpp/shim.h");
     println!("cargo:rerun-if-env-changed=TTD_SDK_DIR");
+    // Rerun if the SDK inputs the shim actually consumes change in-place
+    // (e.g. `download-ttd.ps1` was re-run with a newer SDK version).
+    println!(
+        "cargo:rerun-if-changed={}",
+        include_dir.join("TTD/IReplayEngine.h").display()
+    );
+    println!(
+        "cargo:rerun-if-changed={}",
+        lib_dir.join("TTDReplay.lib").display()
+    );
 
     cc::Build::new()
         .cpp(true)
