@@ -1,8 +1,8 @@
-# GitHub Copilot Instructions — dr-house-rs
+# GitHub Copilot Instructions — morgagni-rs
 
 ## Differential Diagnosis for Code
 
-Dr House, TTD (Time Travel Debugger) is a VS Code extension that applies 
+Morgagni, TTD (Time Travel Debugger) is a VS Code extension that applies 
 differential diagnosis techniques to debugging and code analysis. Rather than 
 running arbitrary cargo commands, this project uses structured tools and 
 record-and-replay debugging to identify and fix issues.

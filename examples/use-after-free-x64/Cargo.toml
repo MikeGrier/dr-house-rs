@@ -1,0 +1,13 @@
+[package]
+name = "use-after-free-x64"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Trace bait: VirtualAlloc a page, VirtualFree it, then write into the released address."
+publish = false
+
+[[bin]]
+name = "use-after-free-x64"
+path = "src/main.rs"

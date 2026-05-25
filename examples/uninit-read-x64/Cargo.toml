@@ -1,0 +1,13 @@
+[package]
+name = "uninit-read-x64"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Trace bait: read a stack slot left dirty by a prior callee, then deref the garbage as a pointer."
+publish = false
+
+[[bin]]
+name = "uninit-read-x64"
+path = "src/main.rs"

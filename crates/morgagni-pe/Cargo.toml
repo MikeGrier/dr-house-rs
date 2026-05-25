@@ -1,0 +1,14 @@
+[package]
+name = "morgagni-pe"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "PE/COFF parsing, export resolution, and x64 unwind-aware stack walking for Morgagni. Reads PE images out of TTD trace memory via a caller-supplied ModuleImageReader."
+
+[dependencies]
+goblin = { version = "0.8", default-features = false, features = ["pe32", "pe64", "endian_fd"] }
+thiserror = "1"
+
+[dev-dependencies]

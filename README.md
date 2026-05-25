@@ -1,10 +1,10 @@
-# Dr House, TTD
+# Morgagni, TTD
 
 A VS Code extension for expert differential diagnosis and time travel debugging.
 
 ## Overview
 
-Dr House, TTD (Time Travel Debugger) brings intelligent debugging techniques to Visual Studio Code. Inspired by the TV character's ability to solve complex medical mysteries through differential diagnosis, this extension applies similar diagnostic techniques to code analysis and debugging.
+Morgagni, TTD (Time Travel Debugger) brings intelligent debugging techniques to Visual Studio Code. Inspired by the TV character's ability to solve complex medical mysteries through differential diagnosis, this extension applies similar diagnostic techniques to code analysis and debugging.
 
 ### Key Features
 
@@ -18,9 +18,9 @@ Dr House, TTD (Time Travel Debugger) brings intelligent debugging techniques to 
 This is a multi-workspace Rust + TypeScript project:
 
 ```
-dr-house-rs/
+morgagni-rs/
 ├── crates/
-│   └── dr-house-ttd-decoder/        # Rust TTD decoder library
+│   └── morgagni-ttd-decoder/        # Rust TTD decoder library
 ├── extension/                        # VS Code extension (TypeScript + resources)
 │   └── resources/
 │       └── ttd/                      # TTD binaries (downloaded at build time)

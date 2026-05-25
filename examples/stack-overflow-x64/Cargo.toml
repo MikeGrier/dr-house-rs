@@ -1,0 +1,13 @@
+[package]
+name = "stack-overflow-x64"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Trace bait: write past a fixed-size stack buffer to clobber the saved return address."
+publish = false
+
+[[bin]]
+name = "stack-overflow-x64"
+path = "src/main.rs"

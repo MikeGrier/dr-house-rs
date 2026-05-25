@@ -83,6 +83,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Rust
+        # Install a baseline toolchain; rustup will auto-install and switch to
+        # the channel pinned by rust-toolchain.toml (with its components)
+        # on the first cargo invocation.
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo registry
@@ -102,6 +105,20 @@ jobs:
         with:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Download TTD runtime + SDK
+        shell: pwsh
+        run: .\.github\scripts\download-ttd.ps1
+
+      - name: Add TTD runtime to PATH
+        shell: pwsh
+        run: |
+          $arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }
+          $runtime = Join-Path $PWD "extension/resources/ttd/$arch"
+          if (-not (Test-Path $runtime)) {
+            throw "TTD runtime dir not found at $runtime"
+          }
+          "$runtime" >> $env:GITHUB_PATH
 
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings

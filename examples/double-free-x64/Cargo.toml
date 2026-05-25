@@ -1,0 +1,13 @@
+[package]
+name = "double-free-x64"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Trace bait: HeapFree the same pointer twice on a heap created with HEAP_GENERATE_EXCEPTIONS."
+publish = false
+
+[[bin]]
+name = "double-free-x64"
+path = "src/main.rs"
