@@ -20,11 +20,18 @@ pub struct InvestigationReport {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RootCause {
     NullPointerDereference {
-        register: RegId,
+        /// Pointer-carrying register identified as the source of the
+        /// null/near-null value, when one could be attributed (e.g. the
+        /// base or index register of the faulting memory operand).
+        /// `None` for absolute-addressing forms like `[0]` where there
+        /// is no register to name.
+        register: Option<RegId>,
         last_written_at: Option<Position>,
         last_written_by_ip: Option<u64>,
     },
-    Unknown { reason: String },
+    Unknown {
+        reason: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

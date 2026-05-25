@@ -17,8 +17,8 @@
 use iced_x86::{Decoder, DecoderOptions, Instruction, OpKind, Register};
 
 use crate::backend::{
-    BackendError, MemoryAccessKind, Position, RegId, TerminationEvent, TerminationKind,
-    ThreadId, TraceBackend,
+    BackendError, MemoryAccessKind, Position, RegId, TerminationEvent, TerminationKind, ThreadId,
+    TraceBackend,
 };
 use crate::report::{FaultDetails, FrameSummary, InvestigationReport, RootCause};
 use crate::{Error, Result};
@@ -94,7 +94,7 @@ fn investigate_null_deref<B: TraceBackend>(
     Ok(InvestigationReport {
         summary,
         root_cause: RootCause::NullPointerDereference {
-            register: base_reg.unwrap_or(RegId::Rip),
+            register: base_reg,
             last_written_at,
             last_written_by_ip,
         },
@@ -118,8 +118,8 @@ fn unknown_av<B: TraceBackend>(
 ) -> InvestigationReport {
     let (rip, text) = match backend.registers(term.thread, term.position) {
         Ok(regs) => {
-            let bytes = read_instruction_bytes(backend, term.position, regs.rip)
-                .unwrap_or_default();
+            let bytes =
+                read_instruction_bytes(backend, term.position, regs.rip).unwrap_or_default();
             let text = if bytes.is_empty() {
                 String::new()
             } else {
@@ -165,7 +165,12 @@ fn collect_stack<B: TraceBackend>(
                 .find(|m| f.ip >= m.base && f.ip < m.base.saturating_add(m.size))
                 .map(|m| (Some(m.name.clone()), Some((f.ip - m.base) as u32)))
                 .unwrap_or((None, None));
-            FrameSummary { ip: f.ip, sp: f.sp, module, rva }
+            FrameSummary {
+                ip: f.ip,
+                sp: f.sp,
+                module,
+                rva,
+            }
         })
         .collect()
 }
@@ -267,12 +272,25 @@ mod tests {
         t.memory.insert(crash_ip, bytes);
 
         // Register snapshot at the crash: rax = 0 (null), rip points at the load.
-        let regs_crash = Registers { rax: 0, rip: crash_ip, ..Default::default() };
-        t.register_snapshots.insert(Position { sequence: 1, steps: 1 }, regs_crash);
+        let regs_crash = Registers {
+            rax: 0,
+            rip: crash_ip,
+            ..Default::default()
+        };
+        t.register_snapshots.insert(
+            Position {
+                sequence: 1,
+                steps: 1,
+            },
+            regs_crash,
+        );
 
         // Earlier write that zeroed rax.
         t.writes.push(MockWrite {
-            position: Position { sequence: 1, steps: 0 },
+            position: Position {
+                sequence: 1,
+                steps: 0,
+            },
             reg: RegId::Rax,
             value: 0,
             ip: 0x1_4000_1000,
@@ -280,7 +298,10 @@ mod tests {
 
         t.termination = Some(TerminationEvent {
             thread,
-            position: Position { sequence: 1, steps: 1 },
+            position: Position {
+                sequence: 1,
+                steps: 1,
+            },
             kind: TerminationKind::AccessViolation {
                 access: MemoryAccessKind::Read,
                 address: 0,
@@ -310,8 +331,14 @@ mod tests {
                 last_written_at,
                 last_written_by_ip,
             } => {
-                assert_eq!(register, RegId::Rax);
-                assert_eq!(last_written_at, Some(Position { sequence: 1, steps: 0 }));
+                assert_eq!(register, Some(RegId::Rax));
+                assert_eq!(
+                    last_written_at,
+                    Some(Position {
+                        sequence: 1,
+                        steps: 0
+                    })
+                );
                 assert_eq!(last_written_by_ip, Some(0x1_4000_1000));
             }
             other => panic!("unexpected root cause: {:?}", other),
@@ -321,7 +348,10 @@ mod tests {
         let _ = report.stack; // mock stack is empty by default; not asserted here.
         let _ = WriteRecord {
             // ensure trait re-export is used somewhere
-            position: Position { sequence: 0, steps: 0 },
+            position: Position {
+                sequence: 0,
+                steps: 0,
+            },
             thread: ThreadId(0),
             ip: 0,
             value: 0,
@@ -333,7 +363,10 @@ mod tests {
         let mut trace = null_deref_scenario();
         trace.termination = Some(TerminationEvent {
             thread: ThreadId(1),
-            position: Position { sequence: 1, steps: 1 },
+            position: Position {
+                sequence: 1,
+                steps: 1,
+            },
             kind: TerminationKind::AccessViolation {
                 access: MemoryAccessKind::Read,
                 address: 0xDEAD_BEEF_0000,
