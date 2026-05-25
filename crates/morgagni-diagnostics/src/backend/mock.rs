@@ -69,12 +69,7 @@ impl TraceBackend for MockTrace {
         Ok(snap)
     }
 
-    fn read_memory(
-        &self,
-        _position: Position,
-        address: u64,
-        len: usize,
-    ) -> BackendResult<Vec<u8>> {
+    fn read_memory(&self, _position: Position, address: u64, len: usize) -> BackendResult<Vec<u8>> {
         // Find the range that contains [address, address+len).
         if let Some((&base, bytes)) = self.memory.range(..=address).next_back() {
             let end = base.saturating_add(bytes.len() as u64);
@@ -121,7 +116,10 @@ mod tests {
     use super::*;
 
     fn pos(s: u64, t: u64) -> Position {
-        Position { sequence: s, steps: t }
+        Position {
+            sequence: s,
+            steps: t,
+        }
     }
 
     fn empty() -> MockTrace {
@@ -159,23 +157,20 @@ mod tests {
     #[test]
     fn registers_returns_latest_snapshot_at_or_before_position() {
         let mut mock = empty();
-        let r0 = Registers { rax: 1, ..Default::default() };
-        let r1 = Registers { rax: 2, ..Default::default() };
+        let r0 = Registers {
+            rax: 1,
+            ..Default::default()
+        };
+        let r1 = Registers {
+            rax: 2,
+            ..Default::default()
+        };
         mock.register_snapshots.insert(pos(10, 0), r0);
         mock.register_snapshots.insert(pos(20, 0), r1);
 
-        assert_eq!(
-            mock.registers(ThreadId(1), pos(15, 0)).unwrap().rax,
-            1
-        );
-        assert_eq!(
-            mock.registers(ThreadId(1), pos(20, 0)).unwrap().rax,
-            2
-        );
-        assert_eq!(
-            mock.registers(ThreadId(1), pos(99, 0)).unwrap().rax,
-            2
-        );
+        assert_eq!(mock.registers(ThreadId(1), pos(15, 0)).unwrap().rax, 1);
+        assert_eq!(mock.registers(ThreadId(1), pos(20, 0)).unwrap().rax, 2);
+        assert_eq!(mock.registers(ThreadId(1), pos(99, 0)).unwrap().rax, 2);
     }
 
     #[test]
@@ -279,18 +274,44 @@ mod tests {
     #[test]
     fn regid_get_covers_all_variants() {
         let r = Registers {
-            rax: 1, rbx: 2, rcx: 3, rdx: 4,
-            rsi: 5, rdi: 6, rbp: 7, rsp: 8,
-            r8: 9, r9: 10, r10: 11, r11: 12,
-            r12: 13, r13: 14, r14: 15, r15: 16,
-            rip: 17, rflags: 18,
+            rax: 1,
+            rbx: 2,
+            rcx: 3,
+            rdx: 4,
+            rsi: 5,
+            rdi: 6,
+            rbp: 7,
+            rsp: 8,
+            r8: 9,
+            r9: 10,
+            r10: 11,
+            r11: 12,
+            r12: 13,
+            r13: 14,
+            r14: 15,
+            r15: 16,
+            rip: 17,
+            rflags: 18,
         };
         let all = [
-            (RegId::Rax, 1), (RegId::Rbx, 2), (RegId::Rcx, 3), (RegId::Rdx, 4),
-            (RegId::Rsi, 5), (RegId::Rdi, 6), (RegId::Rbp, 7), (RegId::Rsp, 8),
-            (RegId::R8, 9), (RegId::R9, 10), (RegId::R10, 11), (RegId::R11, 12),
-            (RegId::R12, 13), (RegId::R13, 14), (RegId::R14, 15), (RegId::R15, 16),
-            (RegId::Rip, 17), (RegId::Rflags, 18),
+            (RegId::Rax, 1),
+            (RegId::Rbx, 2),
+            (RegId::Rcx, 3),
+            (RegId::Rdx, 4),
+            (RegId::Rsi, 5),
+            (RegId::Rdi, 6),
+            (RegId::Rbp, 7),
+            (RegId::Rsp, 8),
+            (RegId::R8, 9),
+            (RegId::R9, 10),
+            (RegId::R10, 11),
+            (RegId::R11, 12),
+            (RegId::R12, 13),
+            (RegId::R13, 14),
+            (RegId::R14, 15),
+            (RegId::R15, 16),
+            (RegId::Rip, 17),
+            (RegId::Rflags, 18),
         ];
         for (reg, expected) in all {
             assert_eq!(r.get(reg), expected, "{reg:?}");

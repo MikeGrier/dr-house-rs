@@ -79,7 +79,10 @@ impl<'de> Deserialize<'de> for Hex {
                 f.write_str("hex u64 string (with or without 0x prefix)")
             }
             fn visit_str<E: de::Error>(self, s: &str) -> Result<Self::Value, E> {
-                let stripped = s.strip_prefix("0x").or_else(|| s.strip_prefix("0X")).unwrap_or(s);
+                let stripped = s
+                    .strip_prefix("0x")
+                    .or_else(|| s.strip_prefix("0X"))
+                    .unwrap_or(s);
                 u64::from_str_radix(stripped, 16)
                     .map(Hex)
                     .map_err(|e| E::custom(format!("bad hex {s:?}: {e}")))
@@ -112,40 +115,71 @@ struct WireException {
     code_hex: Hex,
     program_counter_hex: Hex,
     parameters_hex: Vec<Hex>,
-    #[serde(default)] flags: u32,
+    #[serde(default)]
+    flags: u32,
     // context, record_address_hex, type ignored for backend mapping.
 }
 
 #[derive(Deserialize)]
 struct WireRegs {
-    rax: Hex, rcx: Hex, rdx: Hex, rbx: Hex,
-    rsp: Hex, rbp: Hex, rsi: Hex, rdi: Hex,
-    r8:  Hex, r9:  Hex, r10: Hex, r11: Hex,
-    r12: Hex, r13: Hex, r14: Hex, r15: Hex,
+    rax: Hex,
+    rcx: Hex,
+    rdx: Hex,
+    rbx: Hex,
+    rsp: Hex,
+    rbp: Hex,
+    rsi: Hex,
+    rdi: Hex,
+    r8: Hex,
+    r9: Hex,
+    r10: Hex,
+    r11: Hex,
+    r12: Hex,
+    r13: Hex,
+    r14: Hex,
+    r15: Hex,
     rip: Hex,
     eflags: Hex,
 }
 
 #[derive(Deserialize, Default)]
 struct WireDelta {
-    #[serde(default)] rax: Option<Hex>,
-    #[serde(default)] rcx: Option<Hex>,
-    #[serde(default)] rdx: Option<Hex>,
-    #[serde(default)] rbx: Option<Hex>,
-    #[serde(default)] rsp: Option<Hex>,
-    #[serde(default)] rbp: Option<Hex>,
-    #[serde(default)] rsi: Option<Hex>,
-    #[serde(default)] rdi: Option<Hex>,
-    #[serde(default)] r8:  Option<Hex>,
-    #[serde(default)] r9:  Option<Hex>,
-    #[serde(default)] r10: Option<Hex>,
-    #[serde(default)] r11: Option<Hex>,
-    #[serde(default)] r12: Option<Hex>,
-    #[serde(default)] r13: Option<Hex>,
-    #[serde(default)] r14: Option<Hex>,
-    #[serde(default)] r15: Option<Hex>,
-    #[serde(default)] rip: Option<Hex>,
-    #[serde(default)] eflags: Option<Hex>,
+    #[serde(default)]
+    rax: Option<Hex>,
+    #[serde(default)]
+    rcx: Option<Hex>,
+    #[serde(default)]
+    rdx: Option<Hex>,
+    #[serde(default)]
+    rbx: Option<Hex>,
+    #[serde(default)]
+    rsp: Option<Hex>,
+    #[serde(default)]
+    rbp: Option<Hex>,
+    #[serde(default)]
+    rsi: Option<Hex>,
+    #[serde(default)]
+    rdi: Option<Hex>,
+    #[serde(default)]
+    r8: Option<Hex>,
+    #[serde(default)]
+    r9: Option<Hex>,
+    #[serde(default)]
+    r10: Option<Hex>,
+    #[serde(default)]
+    r11: Option<Hex>,
+    #[serde(default)]
+    r12: Option<Hex>,
+    #[serde(default)]
+    r13: Option<Hex>,
+    #[serde(default)]
+    r14: Option<Hex>,
+    #[serde(default)]
+    r15: Option<Hex>,
+    #[serde(default)]
+    rip: Option<Hex>,
+    #[serde(default)]
+    eflags: Option<Hex>,
 }
 
 #[derive(Deserialize)]
@@ -205,11 +239,24 @@ enum Payload {
 
 #[derive(Default, Clone)]
 struct DeltaRegs {
-    rax: Option<u64>, rcx: Option<u64>, rdx: Option<u64>, rbx: Option<u64>,
-    rsp: Option<u64>, rbp: Option<u64>, rsi: Option<u64>, rdi: Option<u64>,
-    r8:  Option<u64>, r9:  Option<u64>, r10: Option<u64>, r11: Option<u64>,
-    r12: Option<u64>, r13: Option<u64>, r14: Option<u64>, r15: Option<u64>,
-    rip: Option<u64>, rflags: Option<u64>,
+    rax: Option<u64>,
+    rcx: Option<u64>,
+    rdx: Option<u64>,
+    rbx: Option<u64>,
+    rsp: Option<u64>,
+    rbp: Option<u64>,
+    rsi: Option<u64>,
+    rdi: Option<u64>,
+    r8: Option<u64>,
+    r9: Option<u64>,
+    r10: Option<u64>,
+    r11: Option<u64>,
+    r12: Option<u64>,
+    r13: Option<u64>,
+    r14: Option<u64>,
+    r15: Option<u64>,
+    rip: Option<u64>,
+    rflags: Option<u64>,
 }
 
 /// Loader that owns a parsed JSON dump and answers backend queries against it.
@@ -230,8 +277,9 @@ impl JsonTrace {
 
     /// Parse a JSON dump from `path`.
     pub fn from_path(path: impl AsRef<Path>) -> BackendResult<Self> {
-        let bytes = std::fs::read(path.as_ref())
-            .map_err(|e| BackendError::Internal(format!("read {}: {e}", path.as_ref().display())))?;
+        let bytes = std::fs::read(path.as_ref()).map_err(|e| {
+            BackendError::Internal(format!("read {}: {e}", path.as_ref().display()))
+        })?;
         Self::from_bytes(&bytes)
     }
 
@@ -289,7 +337,12 @@ impl JsonTrace {
             });
         }
 
-        Ok(Self { modules, threads, termination, regions })
+        Ok(Self {
+            modules,
+            threads,
+            termination,
+            regions,
+        })
     }
 
     /// All recorded thread ids (whether or not they have whole-trace step data).
@@ -425,10 +478,22 @@ impl TraceBackend for JsonTrace {
 
 fn regs_from_wire(w: WireRegs) -> Registers {
     Registers {
-        rax: w.rax.0, rbx: w.rbx.0, rcx: w.rcx.0, rdx: w.rdx.0,
-        rsi: w.rsi.0, rdi: w.rdi.0, rbp: w.rbp.0, rsp: w.rsp.0,
-        r8:  w.r8.0,  r9:  w.r9.0,  r10: w.r10.0, r11: w.r11.0,
-        r12: w.r12.0, r13: w.r13.0, r14: w.r14.0, r15: w.r15.0,
+        rax: w.rax.0,
+        rbx: w.rbx.0,
+        rcx: w.rcx.0,
+        rdx: w.rdx.0,
+        rsi: w.rsi.0,
+        rdi: w.rdi.0,
+        rbp: w.rbp.0,
+        rsp: w.rsp.0,
+        r8: w.r8.0,
+        r9: w.r9.0,
+        r10: w.r10.0,
+        r11: w.r11.0,
+        r12: w.r12.0,
+        r13: w.r13.0,
+        r14: w.r14.0,
+        r15: w.r15.0,
         rip: w.rip.0,
         rflags: w.eflags.0,
     }
@@ -436,37 +501,82 @@ fn regs_from_wire(w: WireRegs) -> Registers {
 
 fn delta_from_wire(w: WireDelta) -> DeltaRegs {
     DeltaRegs {
-        rax: w.rax.map(|h| h.0), rcx: w.rcx.map(|h| h.0),
-        rdx: w.rdx.map(|h| h.0), rbx: w.rbx.map(|h| h.0),
-        rsp: w.rsp.map(|h| h.0), rbp: w.rbp.map(|h| h.0),
-        rsi: w.rsi.map(|h| h.0), rdi: w.rdi.map(|h| h.0),
-        r8:  w.r8.map(|h| h.0),  r9:  w.r9.map(|h| h.0),
-        r10: w.r10.map(|h| h.0), r11: w.r11.map(|h| h.0),
-        r12: w.r12.map(|h| h.0), r13: w.r13.map(|h| h.0),
-        r14: w.r14.map(|h| h.0), r15: w.r15.map(|h| h.0),
-        rip: w.rip.map(|h| h.0), rflags: w.eflags.map(|h| h.0),
+        rax: w.rax.map(|h| h.0),
+        rcx: w.rcx.map(|h| h.0),
+        rdx: w.rdx.map(|h| h.0),
+        rbx: w.rbx.map(|h| h.0),
+        rsp: w.rsp.map(|h| h.0),
+        rbp: w.rbp.map(|h| h.0),
+        rsi: w.rsi.map(|h| h.0),
+        rdi: w.rdi.map(|h| h.0),
+        r8: w.r8.map(|h| h.0),
+        r9: w.r9.map(|h| h.0),
+        r10: w.r10.map(|h| h.0),
+        r11: w.r11.map(|h| h.0),
+        r12: w.r12.map(|h| h.0),
+        r13: w.r13.map(|h| h.0),
+        r14: w.r14.map(|h| h.0),
+        r15: w.r15.map(|h| h.0),
+        rip: w.rip.map(|h| h.0),
+        rflags: w.eflags.map(|h| h.0),
     }
 }
 
 fn apply_delta(state: &mut Registers, d: &DeltaRegs) {
-    if let Some(v) = d.rax { state.rax = v; }
-    if let Some(v) = d.rbx { state.rbx = v; }
-    if let Some(v) = d.rcx { state.rcx = v; }
-    if let Some(v) = d.rdx { state.rdx = v; }
-    if let Some(v) = d.rsi { state.rsi = v; }
-    if let Some(v) = d.rdi { state.rdi = v; }
-    if let Some(v) = d.rbp { state.rbp = v; }
-    if let Some(v) = d.rsp { state.rsp = v; }
-    if let Some(v) = d.r8  { state.r8  = v; }
-    if let Some(v) = d.r9  { state.r9  = v; }
-    if let Some(v) = d.r10 { state.r10 = v; }
-    if let Some(v) = d.r11 { state.r11 = v; }
-    if let Some(v) = d.r12 { state.r12 = v; }
-    if let Some(v) = d.r13 { state.r13 = v; }
-    if let Some(v) = d.r14 { state.r14 = v; }
-    if let Some(v) = d.r15 { state.r15 = v; }
-    if let Some(v) = d.rip { state.rip = v; }
-    if let Some(v) = d.rflags { state.rflags = v; }
+    if let Some(v) = d.rax {
+        state.rax = v;
+    }
+    if let Some(v) = d.rbx {
+        state.rbx = v;
+    }
+    if let Some(v) = d.rcx {
+        state.rcx = v;
+    }
+    if let Some(v) = d.rdx {
+        state.rdx = v;
+    }
+    if let Some(v) = d.rsi {
+        state.rsi = v;
+    }
+    if let Some(v) = d.rdi {
+        state.rdi = v;
+    }
+    if let Some(v) = d.rbp {
+        state.rbp = v;
+    }
+    if let Some(v) = d.rsp {
+        state.rsp = v;
+    }
+    if let Some(v) = d.r8 {
+        state.r8 = v;
+    }
+    if let Some(v) = d.r9 {
+        state.r9 = v;
+    }
+    if let Some(v) = d.r10 {
+        state.r10 = v;
+    }
+    if let Some(v) = d.r11 {
+        state.r11 = v;
+    }
+    if let Some(v) = d.r12 {
+        state.r12 = v;
+    }
+    if let Some(v) = d.r13 {
+        state.r13 = v;
+    }
+    if let Some(v) = d.r14 {
+        state.r14 = v;
+    }
+    if let Some(v) = d.r15 {
+        state.r15 = v;
+    }
+    if let Some(v) = d.rip {
+        state.rip = v;
+    }
+    if let Some(v) = d.rflags {
+        state.rflags = v;
+    }
 }
 
 fn map_termination(e: WireException) -> TerminationEvent {
@@ -486,7 +596,10 @@ fn map_termination(e: WireException) -> TerminationEvent {
         };
         TerminationKind::AccessViolation { access, address }
     } else if is_fast_fail_status(code) {
-        TerminationKind::FastFail { code, noncontinuable: (e.flags & 1) != 0 }
+        TerminationKind::FastFail {
+            code,
+            noncontinuable: (e.flags & 1) != 0,
+        }
     } else {
         TerminationKind::OtherException {
             code,
@@ -524,7 +637,12 @@ const _: () = {
 mod tests {
     use super::*;
 
-    fn pos(s: u64, t: u64) -> Position { Position { sequence: s, steps: t } }
+    fn pos(s: u64, t: u64) -> Position {
+        Position {
+            sequence: s,
+            steps: t,
+        }
+    }
 
     /// Minimal whole-trace dump: one region, one thread, three steps
     /// (keyframe / delta / delta), plus an AV exception.
@@ -614,7 +732,10 @@ mod tests {
         let t = JsonTrace::from_bytes(json.as_bytes()).expect("parse");
         let term = t.termination().unwrap().unwrap();
         match term.kind {
-            TerminationKind::FastFail { code, noncontinuable } => {
+            TerminationKind::FastFail {
+                code,
+                noncontinuable,
+            } => {
                 assert_eq!(code, 0xC000_0374);
                 assert!(noncontinuable);
             }
@@ -744,7 +865,9 @@ mod tests {
           }]
         }
         "#;
-        let err = JsonTrace::from_bytes(bad.as_bytes()).err().expect("should reject");
+        let err = JsonTrace::from_bytes(bad.as_bytes())
+            .err()
+            .expect("should reject");
         assert!(matches!(err, BackendError::Internal(_)), "got {err:?}");
     }
 
@@ -773,7 +896,9 @@ mod tests {
           }]
         }
         "#;
-        let err = JsonTrace::from_bytes(bad.as_bytes()).err().expect("should reject");
+        let err = JsonTrace::from_bytes(bad.as_bytes())
+            .err()
+            .expect("should reject");
         assert!(matches!(err, BackendError::Internal(_)), "got {err:?}");
     }
 
@@ -781,14 +906,19 @@ mod tests {
     /// Skips silently if the fixture is missing (e.g. running outside the repo).
     #[test]
     fn loads_real_null_deref_index_fixture() {
-        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../fixtures/null-deref-x64.json");
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/null-deref-x64.json");
         if !path.exists() {
             return;
         }
         let trace = JsonTrace::from_path(&path).expect("real fixture parses");
-        assert!(!trace.modules().unwrap().is_empty(), "real fixture has modules");
-        let term = trace.termination().unwrap().expect("real fixture has termination");
+        assert!(
+            !trace.modules().unwrap().is_empty(),
+            "real fixture has modules"
+        );
+        let term = trace
+            .termination()
+            .unwrap()
+            .expect("real fixture has termination");
         assert_eq!(term.thread, ThreadId(2));
         // Index-only dump: registers() returns OutOfRange for any thread/pos.
         assert!(matches!(
