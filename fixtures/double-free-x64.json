@@ -17,7 +17,7 @@
   },
   "modules": [
     {
-      "name": "C:\\github\\dr-house-rs\\target\\release\\double-free-x64.exe",
+      "name": "<repo>\\target\\release\\double-free-x64.exe",
       "address_hex": "0x00007ff623550000",
       "size": 139264,
       "checksum": 0,
@@ -26,7 +26,7 @@
       "unload_sequence": 18446744073709551614
     },
     {
-      "name": "C:\\github\\dr-house-rs\\extension\\resources\\ttd\\x64\\TTDRecordCPU.dll",
+      "name": "<repo>\\extension\\resources\\ttd\\x64\\TTDRecordCPU.dll",
       "address_hex": "0x00007ffaff350000",
       "size": 1757184,
       "checksum": 1417461,
