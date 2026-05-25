@@ -164,7 +164,6 @@ impl TraceBackend for RunTrace {
 
         let mut prev_regs = sys::DhttdAmd64Registers::default();
         let mut have_prev = false;
-        let mut prev_pos = start;
         let mut last_write: Option<WriteRecord> = None;
         // Hard safety cap so a pathological trace cannot wedge a query.
         // 50M steps comfortably exceeds any of our crash specimens.
@@ -199,7 +198,6 @@ impl TraceBackend for RunTrace {
                 }
                 prev_regs = regs;
                 have_prev = true;
-                prev_pos = cur_pos;
             }
 
             // Advance one step.
@@ -217,8 +215,12 @@ impl TraceBackend for RunTrace {
             if advanced == 0 {
                 break;
             }
-            if tuple(next) <= tuple(prev_pos) {
-                // Cursor didn't advance; protect against infinite loop.
+            if tuple(next) <= tuple(cur_pos) {
+                // Cursor didn't advance past the position we just sampled;
+                // protect against infinite loop. Using `cur_pos` (rather
+                // than `prev_pos`, which only updates on successful register
+                // reads) ensures we always make progress even when several
+                // consecutive steps fail to read registers.
                 break;
             }
             steps_taken += 1;
