@@ -10,9 +10,15 @@
 // Behavior:
 //   - Compiles `cpp/shim.cpp` (C++20, MSVC) into a static library named `dhttd_shim`.
 //   - Links `TTDReplay.lib` (the import library for `TTDReplay.dll`).
-//   - At runtime, `TTDReplay.dll` and `TTDReplayCPU.dll` must be resolvable by
-//     the loader; we copy them into `OUT_DIR/.. = target/<profile>/deps/..` so
-//     tests and the dumper binary can find them via the standard DLL search.
+//   - Emits `cargo:runtime_dir=<workspace>/extension/resources/ttd/<arch>` so
+//     downstream crates / test harnesses can locate the runtime DLLs
+//     (`TTDReplay.dll`, `TTDReplayCPU.dll`).
+//
+// Note: this script does NOT copy the runtime DLLs into `target/<profile>/deps`.
+// Callers are responsible for ensuring `TTDReplay.dll` and `TTDReplayCPU.dll`
+// are resolvable by the Windows loader at runtime — either by adding the
+// `runtime_dir` above to `PATH`, copying the DLLs next to the test/binary, or
+// using `SetDllDirectory`/`AddDllDirectory` from the host process.
 
 use std::env;
 use std::path::{Path, PathBuf};
