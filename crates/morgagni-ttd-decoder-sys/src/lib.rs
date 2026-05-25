@@ -69,7 +69,7 @@ pub struct DhttdThread {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct DhttdException {
     pub position: DhttdPosition,
     pub thread_unique_id: u32,
@@ -80,22 +80,6 @@ pub struct DhttdException {
     pub program_counter: u64,
     pub parameter_count: u32,
     pub parameters: [u64; 15],
-}
-
-impl Default for DhttdException {
-    fn default() -> Self {
-        Self {
-            position: DhttdPosition::default(),
-            thread_unique_id: 0,
-            r#type: 0,
-            code: 0,
-            flags: 0,
-            record_address: 0,
-            program_counter: 0,
-            parameter_count: 0,
-            parameters: [0; 15],
-        }
-    }
 }
 
 pub type DhttdEngineHandle = u64;

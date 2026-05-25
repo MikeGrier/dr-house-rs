@@ -263,13 +263,11 @@ mod tests {
         // padded with NOPs so a 15-byte read succeeds.
         let crash_ip = 0x1_4000_1003u64;
         let mut bytes = vec![0x48, 0x8B, 0x08];
-        bytes.extend(std::iter::repeat(0x90).take(15));
+        bytes.extend(std::iter::repeat_n(0x90, 15));
         t.memory.insert(crash_ip, bytes);
 
         // Register snapshot at the crash: rax = 0 (null), rip points at the load.
-        let mut regs_crash = Registers::default();
-        regs_crash.rax = 0;
-        regs_crash.rip = crash_ip;
+        let regs_crash = Registers { rax: 0, rip: crash_ip, ..Default::default() };
         t.register_snapshots.insert(Position { sequence: 1, steps: 1 }, regs_crash);
 
         // Earlier write that zeroed rax.

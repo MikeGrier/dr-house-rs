@@ -11,7 +11,3 @@ publish = false
 [[bin]]
 name = "use-after-free-x64"
 path = "src/main.rs"
-
-[profile.dev]
-opt-level = 0
-debug = "full"

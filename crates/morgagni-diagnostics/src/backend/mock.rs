@@ -76,13 +76,12 @@ impl TraceBackend for MockTrace {
         len: usize,
     ) -> BackendResult<Vec<u8>> {
         // Find the range that contains [address, address+len).
-        for (&base, bytes) in self.memory.range(..=address).rev() {
+        if let Some((&base, bytes)) = self.memory.range(..=address).next_back() {
             let end = base.saturating_add(bytes.len() as u64);
             if address >= base && address.saturating_add(len as u64) <= end {
                 let off = (address - base) as usize;
                 return Ok(bytes[off..off + len].to_vec());
             }
-            break;
         }
         Err(BackendError::OutOfRange)
     }
@@ -160,10 +159,8 @@ mod tests {
     #[test]
     fn registers_returns_latest_snapshot_at_or_before_position() {
         let mut mock = empty();
-        let mut r0 = Registers::default();
-        r0.rax = 1;
-        let mut r1 = Registers::default();
-        r1.rax = 2;
+        let r0 = Registers { rax: 1, ..Default::default() };
+        let r1 = Registers { rax: 2, ..Default::default() };
         mock.register_snapshots.insert(pos(10, 0), r0);
         mock.register_snapshots.insert(pos(20, 0), r1);
 
@@ -281,12 +278,13 @@ mod tests {
 
     #[test]
     fn regid_get_covers_all_variants() {
-        let mut r = Registers::default();
-        r.rax = 1; r.rbx = 2; r.rcx = 3; r.rdx = 4;
-        r.rsi = 5; r.rdi = 6; r.rbp = 7; r.rsp = 8;
-        r.r8 = 9; r.r9 = 10; r.r10 = 11; r.r11 = 12;
-        r.r12 = 13; r.r13 = 14; r.r14 = 15; r.r15 = 16;
-        r.rip = 17; r.rflags = 18;
+        let r = Registers {
+            rax: 1, rbx: 2, rcx: 3, rdx: 4,
+            rsi: 5, rdi: 6, rbp: 7, rsp: 8,
+            r8: 9, r9: 10, r10: 11, r11: 12,
+            r12: 13, r13: 14, r14: 15, r15: 16,
+            rip: 17, rflags: 18,
+        };
         let all = [
             (RegId::Rax, 1), (RegId::Rbx, 2), (RegId::Rcx, 3), (RegId::Rdx, 4),
             (RegId::Rsi, 5), (RegId::Rdi, 6), (RegId::Rbp, 7), (RegId::Rsp, 8),

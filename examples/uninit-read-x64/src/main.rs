@@ -11,8 +11,8 @@ const POISON: u64 = 0xDEAD_BEEF_CAFE_F000;
 #[inline(never)]
 fn polluter() -> u64 {
     let mut buf = [0u64; 64];
-    for i in 0..buf.len() {
-        buf[i] = POISON | i as u64;
+    for (i, slot) in buf.iter_mut().enumerate() {
+        *slot = POISON | i as u64;
     }
     black_box(buf[42])
 }

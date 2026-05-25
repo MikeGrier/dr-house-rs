@@ -11,8 +11,3 @@ publish = false
 [[bin]]
 name = "null-deref-x64"
 path = "src/main.rs"
-
-[profile.dev]
-# Keep symbols and a stable layout so the trace is easy to read back.
-opt-level = 0
-debug = "full"

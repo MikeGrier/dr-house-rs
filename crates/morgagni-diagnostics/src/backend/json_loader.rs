@@ -31,6 +31,7 @@ use super::*;
 // --- wire schema (private) --------------------------------------------------
 
 #[derive(Deserialize)]
+#[allow(dead_code)] // wire schema fields parsed for validation only
 struct WirePositionRange {
     min: WirePosition,
     max: WirePosition,
@@ -99,6 +100,7 @@ struct WireModule {
 #[derive(Deserialize)]
 struct WireThread {
     unique_id: u32,
+    #[allow(dead_code)] // parsed from wire format but not yet surfaced
     os_thread_id: u32,
     // lifetime/active_time ignored for now.
 }
