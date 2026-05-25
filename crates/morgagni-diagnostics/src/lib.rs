@@ -3,8 +3,8 @@
 //!
 //! # Status
 //!
-//! Placeholder scaffolding. The contract is defined so the rest of Dr
-//! House can wire against it today; the first real investigator
+//! Placeholder scaffolding. The contract is defined so the rest of
+//! Morgagni can wire against it today; the first real investigator
 //! (null-pointer dereference) will land against the mock backend in
 //! `morgagni-diagnostics::backend::mock` before any real TTD wiring.
 

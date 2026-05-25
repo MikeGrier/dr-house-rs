@@ -8,8 +8,8 @@
 //!
 //! # Status
 //!
-//! Placeholder. The public types here define the contract the rest of Dr
-//! House will program against; the real PDB / `dbghelp` / symbol-server
+//! Placeholder. The public types here define the contract the rest of
+//! Morgagni will program against; the real PDB / `dbghelp` / symbol-server
 //! implementation is deferred. All resolver methods currently return
 //! `Ok(None)` (unresolved) so callers can wire the type into pipelines
 //! today and get real names later without an API break.
