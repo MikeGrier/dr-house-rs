@@ -415,7 +415,11 @@ fn main() -> std::io::Result<()> {
         if ok == 0 {
             continue;
         }
-        let name = String::from_utf16_lossy(&name_buf[..name_len]);
+        // name_len reports the full required length; clamp to what we
+        // actually copied so we don't slice past the buffer end on
+        // pathologically long module paths.
+        let copied = name_len.min(name_buf.len().saturating_sub(1));
+        let name = String::from_utf16_lossy(&name_buf[..copied]);
         modules.push(Module {
             name,
             address_hex: format!("0x{:016x}", m.address),

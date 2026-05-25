@@ -97,6 +97,17 @@ extern "C" int32_t dhttd_engine_initialize(DhttdEngineHandle h, const uint16_t* 
 
 extern "C" void dhttd_engine_destroy(DhttdEngineHandle h) {
     std::lock_guard<std::mutex> lk(g_mutex);
+    // Reap any cursors created from this engine first, so we don't leave
+    // cursor handles dangling against a freed engine. The SDK destroys
+    // cursors via their own deleter (held by CursorSlot::cursor), and we
+    // must do so before erasing the engine they were created from.
+    for (auto it = g_cursors.begin(); it != g_cursors.end(); ) {
+        if (it->second.engine_handle == h) {
+            it = g_cursors.erase(it);
+        } else {
+            ++it;
+        }
+    }
     g_engines.erase(h);
 }
 
