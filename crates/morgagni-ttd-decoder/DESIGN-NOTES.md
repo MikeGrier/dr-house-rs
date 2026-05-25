@@ -106,12 +106,19 @@ via the `cc` crate, with hand-written `extern "C"` declarations and a safe
 Rust wrapper on top.
 
 ### Decided
-- **SDK acquisition: vendor.** Check a pinned snapshot of the SDK headers
-  into the repo under `crates/morgagni-ttd-decoder-sys/vendor/ttd-sdk/` with
-  a `VERSION` file recording the NuGet package version it came from and a
-  short `UPDATING.md` describing the bump procedure. Rationale: the API is
-  flagged "experimental" and GUID-versioned, so we want deliberate bumps
-  rather than implicit drift; hermetic builds; no NuGet step in CI.
+- **SDK acquisition: download script + pinned version.** The pinned NuGet
+  package version is fetched by `.github/scripts/download-ttd.ps1` and
+  staged under `extension/resources/ttd-sdk/` (headers under `include/`,
+  import libs under `lib/<arch>/`), alongside the runtime DLLs under
+  `extension/resources/ttd/<arch>/`. `crates/morgagni-ttd-decoder-sys/build.rs`
+  locates the SDK there by default, or via the `TTD_SDK_DIR` env var.
+  Rationale: the API is flagged "experimental" and GUID-versioned, so we
+  want deliberate bumps rather than implicit drift; the script pins the
+  version and is the single point of change for an SDK bump; keeps large
+  SDK blobs out of the git history while still being reproducible.
+  (An earlier draft of these notes proposed vendoring a snapshot under
+  `crates/morgagni-ttd-decoder-sys/vendor/ttd-sdk/`; that was superseded
+  by the download-script approach above.)
 - **Shim location: in the `-sys` crate.** See section 5.
 
 ---
