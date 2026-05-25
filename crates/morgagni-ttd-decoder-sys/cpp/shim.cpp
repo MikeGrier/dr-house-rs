@@ -172,6 +172,11 @@ extern "C" int32_t dhttd_engine_module_instance(
     out_module->unload_sequence = static_cast<uint64_t>(mi.UnloadTime);
 
     size_t name_len = m.NameLength;
+    // Always report the full required length so callers can detect
+    // truncation and retry with a larger buffer. The return value of 1 still
+    // indicates success; truncation is signaled by
+    // (*out_name_length_chars > name_capacity_chars - 1).
+    if (out_name_length_chars) *out_name_length_chars = name_len;
     if (name_buffer_utf16 && name_capacity_chars > 0) {
         size_t to_copy = name_len;
         if (to_copy >= name_capacity_chars) {
@@ -179,9 +184,6 @@ extern "C" int32_t dhttd_engine_module_instance(
         }
         std::memcpy(name_buffer_utf16, m.pName, to_copy * sizeof(wchar_t));
         name_buffer_utf16[to_copy] = 0;
-        if (out_name_length_chars) *out_name_length_chars = to_copy;
-    } else if (out_name_length_chars) {
-        *out_name_length_chars = name_len;
     }
     return 1;
 }
