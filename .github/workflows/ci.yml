@@ -83,10 +83,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Rust
-        # rust-toolchain.toml pins the channel (currently 1.95) and components
-        # (rustfmt, clippy). dtolnay/rust-toolchain reads it when no toolchain
-        # is specified.
-        uses: dtolnay/rust-toolchain@master
+        # Install a baseline toolchain; rustup will auto-install and switch to
+        # the channel pinned by rust-toolchain.toml (with its components)
+        # on the first cargo invocation.
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo registry
         uses: actions/cache@v4
