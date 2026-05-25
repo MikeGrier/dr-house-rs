@@ -116,12 +116,7 @@ impl TraceBackend for RunTrace {
         Ok(convert_registers(&regs))
     }
 
-    fn read_memory(
-        &self,
-        position: Position,
-        address: u64,
-        len: usize,
-    ) -> BackendResult<Vec<u8>> {
+    fn read_memory(&self, position: Position, address: u64, len: usize) -> BackendResult<Vec<u8>> {
         if len == 0 {
             return Ok(Vec::new());
         }
@@ -181,8 +176,7 @@ impl TraceBackend for RunTrace {
             }
 
             let mut regs = sys::DhttdAmd64Registers::default();
-            let regs_ok =
-                unsafe { sys::dhttd_cursor_amd64_registers(cur.handle, &mut regs) } != 0;
+            let regs_ok = unsafe { sys::dhttd_cursor_amd64_registers(cur.handle, &mut regs) } != 0;
             if regs_ok {
                 if have_prev {
                     let prev_v = read_reg(&prev_regs, reg);
@@ -353,18 +347,27 @@ fn classify_exception(ex: &sys::DhttdException) -> TerminationEvent {
 /// Mirrors the fail-fast set classified by `morgagni-diagnostics`' JSON
 /// loader. Kept in sync manually; both lists are tiny.
 fn is_fast_fail_status(code: u32) -> bool {
-    matches!(
-        code,
-        0xC000_0374 | 0xC000_0409 | 0xC000_041D | 0xC000_0602
-    )
+    matches!(code, 0xC000_0374 | 0xC000_0409 | 0xC000_041D | 0xC000_0602)
 }
 
 fn convert_registers(r: &sys::DhttdAmd64Registers) -> Registers {
     Registers {
-        rax: r.rax, rbx: r.rbx, rcx: r.rcx, rdx: r.rdx,
-        rsi: r.rsi, rdi: r.rdi, rbp: r.rbp, rsp: r.rsp,
-        r8:  r.r8,  r9:  r.r9,  r10: r.r10, r11: r.r11,
-        r12: r.r12, r13: r.r13, r14: r.r14, r15: r.r15,
+        rax: r.rax,
+        rbx: r.rbx,
+        rcx: r.rcx,
+        rdx: r.rdx,
+        rsi: r.rsi,
+        rdi: r.rdi,
+        rbp: r.rbp,
+        rsp: r.rsp,
+        r8: r.r8,
+        r9: r.r9,
+        r10: r.r10,
+        r11: r.r11,
+        r12: r.r12,
+        r13: r.r13,
+        r14: r.r14,
+        r15: r.r15,
         rip: r.rip,
         rflags: r.eflags as u64,
     }
@@ -372,25 +375,39 @@ fn convert_registers(r: &sys::DhttdAmd64Registers) -> Registers {
 
 fn read_reg(r: &sys::DhttdAmd64Registers, reg: RegId) -> u64 {
     match reg {
-        RegId::Rax => r.rax, RegId::Rbx => r.rbx,
-        RegId::Rcx => r.rcx, RegId::Rdx => r.rdx,
-        RegId::Rsi => r.rsi, RegId::Rdi => r.rdi,
-        RegId::Rbp => r.rbp, RegId::Rsp => r.rsp,
-        RegId::R8  => r.r8,  RegId::R9  => r.r9,
-        RegId::R10 => r.r10, RegId::R11 => r.r11,
-        RegId::R12 => r.r12, RegId::R13 => r.r13,
-        RegId::R14 => r.r14, RegId::R15 => r.r15,
+        RegId::Rax => r.rax,
+        RegId::Rbx => r.rbx,
+        RegId::Rcx => r.rcx,
+        RegId::Rdx => r.rdx,
+        RegId::Rsi => r.rsi,
+        RegId::Rdi => r.rdi,
+        RegId::Rbp => r.rbp,
+        RegId::Rsp => r.rsp,
+        RegId::R8 => r.r8,
+        RegId::R9 => r.r9,
+        RegId::R10 => r.r10,
+        RegId::R11 => r.r11,
+        RegId::R12 => r.r12,
+        RegId::R13 => r.r13,
+        RegId::R14 => r.r14,
+        RegId::R15 => r.r15,
         RegId::Rip => r.rip,
         RegId::Rflags => r.eflags as u64,
     }
 }
 
 fn to_sys_position(p: Position) -> sys::DhttdPosition {
-    sys::DhttdPosition { sequence: p.sequence, steps: p.steps }
+    sys::DhttdPosition {
+        sequence: p.sequence,
+        steps: p.steps,
+    }
 }
 
 fn from_sys_position(p: sys::DhttdPosition) -> Position {
-    Position { sequence: p.sequence, steps: p.steps }
+    Position {
+        sequence: p.sequence,
+        steps: p.steps,
+    }
 }
 
 fn tuple(p: sys::DhttdPosition) -> (u64, u64) {
@@ -426,12 +443,19 @@ mod tests {
             .map(std::path::PathBuf::from)
             .or_else(|| {
                 let p = std::path::Path::new("../../fixtures/null-deref-x64.run");
-                if p.exists() { Some(p.to_path_buf()) } else { None }
+                if p.exists() {
+                    Some(p.to_path_buf())
+                } else {
+                    None
+                }
             })?;
         match RunTrace::from_path(&path) {
             Ok(t) => Some(t),
             Err(e) => {
-                eprintln!("skipping RunTrace test: failed to open {}: {e}", path.display());
+                eprintln!(
+                    "skipping RunTrace test: failed to open {}: {e}",
+                    path.display()
+                );
                 None
             }
         }
@@ -441,13 +465,19 @@ mod tests {
     fn opens_and_lists_modules() {
         let Some(t) = open_fixture() else { return };
         let ms = t.modules().unwrap();
-        assert!(!ms.is_empty(), "trace should expose at least the main module");
+        assert!(
+            !ms.is_empty(),
+            "trace should expose at least the main module"
+        );
     }
 
     #[test]
     fn termination_present_for_crashing_trace() {
         let Some(t) = open_fixture() else { return };
-        let term = t.termination().unwrap().expect("crash specimen must terminate");
+        let term = t
+            .termination()
+            .unwrap()
+            .expect("crash specimen must terminate");
         // We don't assert the exact kind here because the env override might
         // point at any trace; just sanity-check the event shape.
         assert!(term.position.sequence > 0 || term.position.steps > 0);
@@ -478,8 +508,8 @@ mod tests {
     #[test]
     fn investigator_runs_against_run_trace() {
         let Some(t) = open_fixture() else { return };
-        let report = morgagni_diagnostics::investigate(&t)
-            .expect("investigator should produce a report");
+        let report =
+            morgagni_diagnostics::investigate(&t).expect("investigator should produce a report");
         eprintln!("---- investigation report ----");
         eprintln!("summary : {}", report.summary);
         eprintln!("root    : {:?}", report.root_cause);

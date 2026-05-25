@@ -88,22 +88,40 @@ pub type DhttdCursorHandle = u64;
 #[repr(C)]
 #[derive(Debug, Clone, Copy, Default)]
 pub struct DhttdAmd64Registers {
-    pub rax: u64, pub rcx: u64, pub rdx: u64, pub rbx: u64,
-    pub rsp: u64, pub rbp: u64, pub rsi: u64, pub rdi: u64,
-    pub r8: u64,  pub r9: u64,  pub r10: u64, pub r11: u64,
-    pub r12: u64, pub r13: u64, pub r14: u64, pub r15: u64,
+    pub rax: u64,
+    pub rcx: u64,
+    pub rdx: u64,
+    pub rbx: u64,
+    pub rsp: u64,
+    pub rbp: u64,
+    pub rsi: u64,
+    pub rdi: u64,
+    pub r8: u64,
+    pub r9: u64,
+    pub r10: u64,
+    pub r11: u64,
+    pub r12: u64,
+    pub r13: u64,
+    pub r14: u64,
+    pub r15: u64,
     pub rip: u64,
     pub eflags: u32,
     pub context_flags: u32,
 }
 
 #[cfg(target_os = "windows")]
-extern "C" {
+unsafe extern "C" {
     pub fn dhttd_engine_create(out: *mut DhttdEngineHandle) -> u32;
     pub fn dhttd_engine_initialize(engine: DhttdEngineHandle, trace_path_utf16: *const u16) -> i32;
     pub fn dhttd_engine_destroy(engine: DhttdEngineHandle);
-    pub fn dhttd_engine_get_system_info(engine: DhttdEngineHandle, out: *mut DhttdSystemInfo) -> i32;
-    pub fn dhttd_engine_get_lifetime(engine: DhttdEngineHandle, out: *mut DhttdPositionRange) -> i32;
+    pub fn dhttd_engine_get_system_info(
+        engine: DhttdEngineHandle,
+        out: *mut DhttdSystemInfo,
+    ) -> i32;
+    pub fn dhttd_engine_get_lifetime(
+        engine: DhttdEngineHandle,
+        out: *mut DhttdPositionRange,
+    ) -> i32;
     pub fn dhttd_engine_module_instance_count(engine: DhttdEngineHandle) -> usize;
     pub fn dhttd_engine_module_instance(
         engine: DhttdEngineHandle,
@@ -114,11 +132,23 @@ extern "C" {
         out_name_length_chars: *mut usize,
     ) -> i32;
     pub fn dhttd_engine_thread_count(engine: DhttdEngineHandle) -> usize;
-    pub fn dhttd_engine_thread(engine: DhttdEngineHandle, index: usize, out: *mut DhttdThread) -> i32;
+    pub fn dhttd_engine_thread(
+        engine: DhttdEngineHandle,
+        index: usize,
+        out: *mut DhttdThread,
+    ) -> i32;
     pub fn dhttd_engine_exception_count(engine: DhttdEngineHandle) -> usize;
-    pub fn dhttd_engine_exception(engine: DhttdEngineHandle, index: usize, out: *mut DhttdException) -> i32;
+    pub fn dhttd_engine_exception(
+        engine: DhttdEngineHandle,
+        index: usize,
+        out: *mut DhttdException,
+    ) -> i32;
     pub fn dhttd_engine_keyframe_count(engine: DhttdEngineHandle) -> usize;
-    pub fn dhttd_engine_keyframe(engine: DhttdEngineHandle, index: usize, out: *mut DhttdPosition) -> i32;
+    pub fn dhttd_engine_keyframe(
+        engine: DhttdEngineHandle,
+        index: usize,
+        out: *mut DhttdPosition,
+    ) -> i32;
 
     pub fn dhttd_cursor_create(engine: DhttdEngineHandle, out: *mut DhttdCursorHandle) -> u32;
     pub fn dhttd_cursor_destroy(cursor: DhttdCursorHandle);
@@ -131,7 +161,10 @@ extern "C" {
     pub fn dhttd_cursor_program_counter(cursor: DhttdCursorHandle) -> u64;
     pub fn dhttd_cursor_stack_pointer(cursor: DhttdCursorHandle) -> u64;
     pub fn dhttd_cursor_frame_pointer(cursor: DhttdCursorHandle) -> u64;
-    pub fn dhttd_cursor_amd64_registers(cursor: DhttdCursorHandle, out: *mut DhttdAmd64Registers) -> i32;
+    pub fn dhttd_cursor_amd64_registers(
+        cursor: DhttdCursorHandle,
+        out: *mut DhttdAmd64Registers,
+    ) -> i32;
     pub fn dhttd_cursor_read_memory(
         cursor: DhttdCursorHandle,
         address: u64,

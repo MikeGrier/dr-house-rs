@@ -97,11 +97,7 @@ impl Resolver {
     }
 
     /// Resolve a module + RVA pair.
-    pub fn resolve_rva(
-        &self,
-        _module: &ModuleId,
-        _rva: u32,
-    ) -> Result<Option<ResolvedSymbol>> {
+    pub fn resolve_rva(&self, _module: &ModuleId, _rva: u32) -> Result<Option<ResolvedSymbol>> {
         Ok(None)
     }
 }

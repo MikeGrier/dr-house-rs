@@ -108,6 +108,10 @@ mod tests {
 
     #[test]
     fn resolve_export_returns_none_for_now() {
-        assert!(resolve_export(&ZeroReader, 0x1000_0000, "main").unwrap().is_none());
+        assert!(
+            resolve_export(&ZeroReader, 0x1000_0000, "main")
+                .unwrap()
+                .is_none()
+        );
     }
 }

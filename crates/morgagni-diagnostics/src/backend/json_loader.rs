@@ -23,8 +23,8 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::path::Path;
 
-use serde::de::{self, Deserializer, Visitor};
 use serde::Deserialize;
+use serde::de::{self, Deserializer, Visitor};
 
 use super::*;
 
@@ -455,15 +455,15 @@ impl TraceBackend for JsonTrace {
                     Payload::Delta(d) => apply_delta(&mut state, d),
                 }
                 let new_value = state.get(reg);
-                if let Some(bv) = before_value {
-                    if bv != new_value {
-                        best = Some(WriteRecord {
-                            position: pos,
-                            thread,
-                            ip: prev_rip,
-                            value: new_value,
-                        });
-                    }
+                if let Some(bv) = before_value
+                    && bv != new_value
+                {
+                    best = Some(WriteRecord {
+                        position: pos,
+                        thread,
+                        ip: prev_rip,
+                        value: new_value,
+                    });
                 }
                 prev_value = new_value;
                 have_prev = true;

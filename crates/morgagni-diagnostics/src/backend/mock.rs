@@ -243,18 +243,21 @@ mod tests {
             ip: 0x1000,
         });
         // Asking for "before pos(20)" must exclude the write *at* pos(20).
-        assert!(mock
-            .last_write_register(ThreadId(1), RegId::Rax, pos(20, 0))
-            .unwrap()
-            .is_none());
+        assert!(
+            mock.last_write_register(ThreadId(1), RegId::Rax, pos(20, 0))
+                .unwrap()
+                .is_none()
+        );
     }
 
     #[test]
     fn last_write_register_none_when_no_writes() {
-        assert!(empty()
-            .last_write_register(ThreadId(1), RegId::Rax, pos(100, 0))
-            .unwrap()
-            .is_none());
+        assert!(
+            empty()
+                .last_write_register(ThreadId(1), RegId::Rax, pos(100, 0))
+                .unwrap()
+                .is_none()
+        );
     }
 
     #[test]

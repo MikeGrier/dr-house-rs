@@ -7,7 +7,7 @@ use std::hint::black_box;
 use std::ptr::null_mut;
 
 #[link(name = "kernel32")]
-extern "system" {
+unsafe extern "system" {
     fn HeapCreate(options: u32, initial: usize, max: usize) -> *mut c_void;
     fn HeapAlloc(heap: *mut c_void, flags: u32, bytes: usize) -> *mut u8;
     fn HeapFree(heap: *mut c_void, flags: u32, mem: *mut u8) -> i32;

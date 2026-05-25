@@ -29,7 +29,9 @@ fn main() {
         // `cargo check` on the workspace still works (downstream code that
         // actually calls into the FFI will fail to link on non-Windows, which
         // is the desired behavior).
-        println!("cargo:warning=morgagni-ttd-decoder-sys: TTD is Windows-only, building empty shim");
+        println!(
+            "cargo:warning=morgagni-ttd-decoder-sys: TTD is Windows-only, building empty shim"
+        );
         return;
     }
 
@@ -79,8 +81,15 @@ fn locate_sdk_dir() -> PathBuf {
     }
     let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     // crates/morgagni-ttd-decoder-sys -> workspace root
-    let workspace = manifest.parent().and_then(Path::parent).unwrap().to_path_buf();
-    workspace.join("extension").join("resources").join("ttd-sdk")
+    let workspace = manifest
+        .parent()
+        .and_then(Path::parent)
+        .unwrap()
+        .to_path_buf();
+    workspace
+        .join("extension")
+        .join("resources")
+        .join("ttd-sdk")
 }
 
 fn target_arch_subdir() -> &'static str {
@@ -93,6 +102,14 @@ fn target_arch_subdir() -> &'static str {
 
 fn runtime_dir_for_arch(arch: &str) -> PathBuf {
     let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let workspace = manifest.parent().and_then(Path::parent).unwrap().to_path_buf();
-    workspace.join("extension").join("resources").join("ttd").join(arch)
+    let workspace = manifest
+        .parent()
+        .and_then(Path::parent)
+        .unwrap()
+        .to_path_buf();
+    workspace
+        .join("extension")
+        .join("resources")
+        .join("ttd")
+        .join(arch)
 }

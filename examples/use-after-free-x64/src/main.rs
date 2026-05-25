@@ -6,7 +6,7 @@ use std::hint::black_box;
 use std::ptr::null_mut;
 
 #[link(name = "kernel32")]
-extern "system" {
+unsafe extern "system" {
     fn VirtualAlloc(addr: *mut u8, size: usize, alloc_type: u32, protect: u32) -> *mut u8;
     fn VirtualFree(addr: *mut u8, size: usize, free_type: u32) -> i32;
 }
@@ -23,14 +23,8 @@ fn poke(p: *mut u32, value: u32) {
 
 fn main() {
     println!("use-after-free-x64: allocating one page");
-    let page = unsafe {
-        VirtualAlloc(
-            null_mut(),
-            0x1000,
-            MEM_COMMIT | MEM_RESERVE,
-            PAGE_READWRITE,
-        )
-    };
+    let page =
+        unsafe { VirtualAlloc(null_mut(), 0x1000, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE) };
     assert!(!page.is_null(), "VirtualAlloc failed");
 
     // Touch it once so the trace shows a legitimate live write.
