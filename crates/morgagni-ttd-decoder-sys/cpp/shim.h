@@ -56,8 +56,11 @@ typedef struct DhttdModule {
     uint64_t unload_sequence;
     // UTF-16 LE module name, NUL-terminated, written into a caller-provided
     // buffer. `name_capacity_chars` is the buffer size in wchar_t units; on
-    // return `name_length_chars` is set to the number of chars written
-    // (excluding NUL).
+    // return `name_length_chars` is set to the *required* length in chars
+    // (excluding NUL), which may exceed `name_capacity_chars - 1`. Truncation
+    // is signaled by `name_length_chars >= name_capacity_chars`; callers can
+    // retry with a buffer of size `name_length_chars + 1` to get the full
+    // name. The buffer is always NUL-terminated when non-empty.
 } DhttdModule;
 
 typedef struct DhttdThread {
