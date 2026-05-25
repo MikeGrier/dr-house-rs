@@ -1,0 +1,47 @@
+Microsoft (R) TTDRecord 1.01.11 x64
+Release: 1.11.584.0
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+
+Initializing Time Travel Debugging for Launch of C:\github\dr-house-rs\target\release\uninit-read-x64.exe
+Time: 05/22/2026 15:18:58
+OS:10.0.26200 EDITION:x64
+
+SessionID: 5BF9A54E-8C77-480E-9817-A650522DB779
+
+   (TTD::ManageTTDTrace:2710)
+Running C:\github\dr-house-rs\target\release\uninit-read-x64.exe
+   (TTD::StartGuestProcess:1493)
+Group tracing GUID: B61CA556-3866-4905-8157-055EDA0A9333
+
+Running "C:\github\dr-house-rs\extension\resources\ttd\x64\TTDInject.exe" /duration 0 /InjectMode LoaderForCombinedRecording /ClientParams "50 C:\github\dr-house-rs\fixtures\uninit-read-x64.run 0 0 0 0 0 0 1 0 806001 0" /RecordScenario 268435457 /attach 39448 /SuspendedAtLaunch -TraceFileHandle 14 -GuestEventHandle 18 -ClientEventHandle 1c -ActiveEventHandle 20 -MutexHandle 24 -CommunicationBufferHandle 28 -SharedSequenceMutexHandle 2c -SharedSequenceBufferHandle 30 /TelemetryFeatureSessionId "5BF9A54E-8C77-480E-9817-A650522DB779"
+   (TTD::StartGuestProcess:1989)
+Microsoft (R) TTDInject 1.01.11 x64
+Release: 1.11.584.0
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+TTDLoader Params:
+ LauncherDll = TTDLoader
+ ClientDll   = TTDRecordCPU
+ ClientEntry = InitializeNirvanaClient
+ ClientParams= 50 C:\github\dr-house-rs\fixtures\uninit-read-x64.run 0 0 0 0 0 0 1 0 806001 0
+ SuspendedAtLaunch
+WaitForMain is on
+TTDInject: QueryProcessorAndGroupInformation group 0 reports 32 processors.
+TTDInject: QueryProcessorAndGroupInformation reports 32 total processors in 1 groups.
+TTDInject: QuerySystemBasicInformation reports 32 processors.
+Allocated processors:55, running threads:1.
+Loader TTDLoader.dll injected at 0x00007FFB5EB40000 0xa000 -- .reload  TTDLoader.dll=0x00007FFB5EB40000,0xa000
+
+Injection by thread is complete.
+RecordingEngine initialization successful.
+RecordVcpu initialization successful.
+Loader initialization successful.
+Guest Process is x64 binary.
+Tracing started at: Fri May 22 19:18:58 2026 (UTC) Fri May 22 15:18:58 2026 (Local)
+
+Guest process exited with exit code 3221225477
+Simulation time of 'C:\github\dr-house-rs\target\release\uninit-read-x64.exe' (x64): 1234ms.
+Tracing completed at: Fri May 22 19:19:00 2026 (UTC) Fri May 22 15:19:00 2026 (Local)
+
+Trace dumped to C:\github\dr-house-rs\fixtures\uninit-read-x64.run

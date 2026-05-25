@@ -3,8 +3,16 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/dr-house-ttd-decoder",
-    "crates/dr-house-symbols",
+    "crates/morgagni-ttd-decoder",
+    "crates/morgagni-ttd-decoder-sys",
+    "crates/morgagni-symbols",
+    "crates/morgagni-pe",
+    "crates/morgagni-diagnostics",
+    "examples/null-deref-x64",
+    "examples/use-after-free-x64",
+    "examples/uninit-read-x64",
+    "examples/stack-overflow-x64",
+    "examples/double-free-x64",
 ]
 
 [workspace.package]

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Dr House, TTD extension bundles Microsoft's Time Travel Debugger (TTD) binaries as part of its distribution. These native debugger DLLs are essential for the extension's differential diagnosis and time-travel debugging capabilities.
+The Morgagni, TTD extension bundles Microsoft's Time Travel Debugger (TTD) binaries as part of its distribution. These native debugger DLLs are essential for the extension's differential diagnosis and time-travel debugging capabilities.
 
 ## Architecture
 

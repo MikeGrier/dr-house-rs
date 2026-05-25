@@ -1,0 +1,18 @@
+[package]
+name = "null-deref-x64"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Tiny Rust program that triggers a null pointer dereference; used as TTD trace bait."
+publish = false
+
+[[bin]]
+name = "null-deref-x64"
+path = "src/main.rs"
+
+[profile.dev]
+# Keep symbols and a stable layout so the trace is easy to read back.
+opt-level = 0
+debug = "full"

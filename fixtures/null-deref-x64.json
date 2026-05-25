@@ -1,0 +1,143 @@
+{
+  "trace_path": "fixtures\\null-deref-x64.run",
+  "system_info": {
+    "major_version": 1,
+    "minor_version": 11,
+    "process_id": 27528,
+    "peb_address_hex": "0x000000650a64d000",
+    "os_major": 10,
+    "os_minor": 0,
+    "os_build": 26200,
+    "processors": 32,
+    "arch": "x64"
+  },
+  "lifetime": {
+    "min": "12:0",
+    "max": "132:845"
+  },
+  "modules": [
+    {
+      "name": "C:\\github\\dr-house-rs\\target\\release\\null-deref-x64.exe",
+      "address_hex": "0x00007ff653c90000",
+      "size": 139264,
+      "checksum": 0,
+      "timestamp": 1779477446,
+      "load_sequence": 2,
+      "unload_sequence": 18446744073709551614
+    },
+    {
+      "name": "C:\\github\\dr-house-rs\\extension\\resources\\ttd\\x64\\TTDRecordCPU.dll",
+      "address_hex": "0x00007ffaff350000",
+      "size": 1757184,
+      "checksum": 1417461,
+      "timestamp": 161095068,
+      "load_sequence": 3,
+      "unload_sequence": 18446744073709551614
+    },
+    {
+      "name": "C:\\WINDOWS\\SYSTEM32\\VCRUNTIME140.dll",
+      "address_hex": "0x00007ffb53d70000",
+      "size": 180224,
+      "checksum": 231022,
+      "timestamp": 2502802980,
+      "load_sequence": 4,
+      "unload_sequence": 18446744073709551614
+    },
+    {
+      "name": "C:\\WINDOWS\\System32\\KERNELBASE.dll",
+      "address_hex": "0x00007ffb706c0000",
+      "size": 4157440,
+      "checksum": 4185112,
+      "timestamp": 408960063,
+      "load_sequence": 5,
+      "unload_sequence": 18446744073709551614
+    },
+    {
+      "name": "C:\\WINDOWS\\System32\\ucrtbase.dll",
+      "address_hex": "0x00007ffb71610000",
+      "size": 1355776,
+      "checksum": 1427661,
+      "timestamp": 1040868400,
+      "load_sequence": 6,
+      "unload_sequence": 18446744073709551614
+    },
+    {
+      "name": "C:\\WINDOWS\\System32\\KERNEL32.DLL",
+      "address_hex": "0x00007ffb72340000",
+      "size": 823296,
+      "checksum": 882356,
+      "timestamp": 3983949255,
+      "load_sequence": 7,
+      "unload_sequence": 18446744073709551614
+    },
+    {
+      "name": "C:\\WINDOWS\\SYSTEM32\\ntdll.dll",
+      "address_hex": "0x00007ffb73aa0000",
+      "size": 2519040,
+      "checksum": 2533728,
+      "timestamp": 2275552,
+      "load_sequence": 8,
+      "unload_sequence": 18446744073709551614
+    }
+  ],
+  "threads": [
+    {
+      "unique_id": 2,
+      "os_thread_id": 36976,
+      "lifetime": {
+        "min": "10:0",
+        "max": "133:0"
+      },
+      "active_time": {
+        "min": "12:0",
+        "max": "132:845"
+      }
+    }
+  ],
+  "exceptions": [
+    {
+      "position": "53:0",
+      "thread_unique_id": 2,
+      "type": 0,
+      "code_hex": "0xc0000005",
+      "flags": 0,
+      "record_address_hex": "0x0000000000000000",
+      "program_counter_hex": "0x00007ff653c91060",
+      "parameters_hex": [
+        "0x0000000000000000",
+        "0x0000000000000000"
+      ],
+      "context": {
+        "program_counter_hex": "0x00007ff653c91060",
+        "stack_pointer_hex": "0x000000650a8ffd08",
+        "frame_pointer_hex": "0x000000650a8ffe20",
+        "registers": {
+          "rax": "650a8ffd3c",
+          "rcx": "0",
+          "rdx": "42424242",
+          "rbx": "1a27f2aef20",
+          "rsp": "650a8ffd08",
+          "rbp": "650a8ffe20",
+          "rsi": "7ff653ca73a0",
+          "rdi": "650a8ffe70",
+          "r8": "0",
+          "r9": "7ffb53d8c03e",
+          "r10": "7ffb53d70000",
+          "r11": "0",
+          "r12": "0",
+          "r13": "0",
+          "r14": "0",
+          "r15": "0",
+          "rip": "7ff653c91060",
+          "eflags": "206"
+        },
+        "faulting_memory_hex": ""
+      }
+    }
+  ],
+  "keyframes": [
+    "12:0",
+    "133:0"
+  ],
+  "recorded_regions": []
+}

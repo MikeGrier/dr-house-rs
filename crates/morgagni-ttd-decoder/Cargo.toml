@@ -1,0 +1,14 @@
+[package]
+name = "morgagni-ttd-decoder"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Rust bindings and decoder logic for the Windows Time Travel Debugger (TTD) replay API"
+
+# TTD only exists on Windows; on other platforms this crate compiles to an
+# empty stub so `cargo check --workspace` stays green for portable tooling.
+[target.'cfg(windows)'.dependencies]
+morgagni-ttd-decoder-sys = { path = "../morgagni-ttd-decoder-sys" }
+morgagni-diagnostics = { path = "../morgagni-diagnostics" }

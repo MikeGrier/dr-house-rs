@@ -1,0 +1,11 @@
+[package]
+name = "morgagni-symbols"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Symbol resolution and symbol management for Morgagni (PDB / dbghelp / symbol-server policy). Placeholder implementation."
+
+[dependencies]
+thiserror = "1"

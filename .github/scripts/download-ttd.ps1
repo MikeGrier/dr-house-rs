@@ -6,7 +6,7 @@
 .DESCRIPTION
     This script fetches the latest TTD package from Microsoft, extracts the
     full recording and replay binaries for x64 and ARM64 platforms, and
-    organizes them for distribution with the Dr House extension.
+    organizes them for distribution with the Morgagni extension.
 
     Each platform package includes both the recorder (TTD.exe, TTDInject.exe,
     TTDLoader.dll, TTDRecord.dll, TTDRecordCPU.dll, TTDRecordUI.dll,
@@ -24,7 +24,9 @@
 #>
 
 param(
-    [string]$OutputPath = './extension/resources/ttd'
+    [string]$OutputPath = './extension/resources/ttd',
+    [string]$SdkOutputPath = './extension/resources/ttd-sdk',
+    [string]$SdkPackageVersion = '0.9.5'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -115,11 +117,44 @@ try {
             }
     }
     
-    Write-Host "`n✓ TTD binaries successfully downloaded and extracted" -ForegroundColor $successColor
-    Write-Host "Output location: $(Resolve-Path $outputDir)" -ForegroundColor $successColor
+
+    # Step 6: Download TTD Replay API SDK (headers + import libs) from NuGet.
+    # This is what the C++ shim in morgagni-ttd-decoder-sys compiles and links against.
+    Write-Host "`nStep 6: Downloading TTD Replay API SDK (NuGet $SdkPackageVersion)..." -ForegroundColor $infoColor
+    $nupkgUri = "https://www.nuget.org/api/v2/package/Microsoft.TimeTravelDebugging.Apis/$SdkPackageVersion"
+    $nupkgPath = Join-Path $tempDir 'ttd-apis.nupkg'
+    Invoke-WebRequest -Uri $nupkgUri -OutFile $nupkgPath -ErrorAction Stop
+    Write-Host "Downloaded NuGet package" -ForegroundColor $successColor
+
+    $sdkExtractDir = Join-Path $tempDir 'ttd-apis-extracted'
+    New-Item -ItemType Directory -Path $sdkExtractDir -Force | Out-Null
+    Expand-Archive -Path $nupkgPath -DestinationPath $sdkExtractDir -Force
+
+    if (-not (Test-Path $SdkOutputPath)) {
+        New-Item -ItemType Directory -Path $SdkOutputPath -Force | Out-Null
+    }
+    # Headers
+    $includeSrc = Join-Path $sdkExtractDir 'sdk\include'
+    $includeDst = Join-Path $SdkOutputPath 'include'
+    if (Test-Path $includeDst) { Remove-Item $includeDst -Recurse -Force }
+    Copy-Item -Path $includeSrc -Destination $includeDst -Recurse -Force
+    Write-Host "  Copied headers -> $includeDst" -ForegroundColor $successColor
+    # Import libraries (skip x86)
+    foreach ($arch in @('x64', 'arm64')) {
+        $libSrc = Join-Path $sdkExtractDir "sdk\lib\$arch"
+        $libDst = Join-Path $SdkOutputPath "lib\$arch"
+        if (Test-Path $libSrc) {
+            if (Test-Path $libDst) { Remove-Item $libDst -Recurse -Force }
+            Copy-Item -Path $libSrc -Destination $libDst -Recurse -Force
+            Write-Host "  Copied $arch import libs -> $libDst" -ForegroundColor $successColor
+        }
+    }
+    Write-Host "✓ SDK installed at $(Resolve-Path $SdkOutputPath)" -ForegroundColor $successColor
+
+    # Step 7st "Output location: $(Resolve-Path $outputDir)" -ForegroundColor $successColor
     
     # Step 6: Cleanup
-    Write-Host "`nStep 6: Cleaning up temporary files..." -ForegroundColor $infoColor
+    Write-Host "`nStep 7: Cleaning up temporary files..." -ForegroundColor $infoColor
     Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
     Write-Host "Cleanup complete" -ForegroundColor $successColor
     

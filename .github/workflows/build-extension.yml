@@ -89,5 +89,5 @@ jobs:
         if: steps.layout.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: dr-house-ttd-${{ matrix.target }}
+          name: morgagni-ttd-${{ matrix.target }}
           path: ${{ steps.layout.outputs.vsix-path }}
