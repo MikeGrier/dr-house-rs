@@ -132,10 +132,11 @@ impl TraceBackend for RunTrace {
         let n = unsafe {
             sys::dhttd_cursor_read_memory(cur.handle, address, buf.as_mut_ptr(), buf.len())
         };
-        if n == 0 {
+        if n < len {
+            // Honor the TraceBackend contract: short reads are an
+            // OutOfRange error, not a successful partial read.
             return Err(BackendError::OutOfRange);
         }
-        buf.truncate(n);
         Ok(buf)
     }
 

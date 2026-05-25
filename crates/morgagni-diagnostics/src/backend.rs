@@ -27,33 +27,70 @@ pub struct ThreadId(pub u32);
 /// enumerate what it supports.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum RegId {
-    Rax, Rbx, Rcx, Rdx, Rsi, Rdi, Rbp, Rsp,
-    R8, R9, R10, R11, R12, R13, R14, R15,
-    Rip, Rflags,
+    Rax,
+    Rbx,
+    Rcx,
+    Rdx,
+    Rsi,
+    Rdi,
+    Rbp,
+    Rsp,
+    R8,
+    R9,
+    R10,
+    R11,
+    R12,
+    R13,
+    R14,
+    R15,
+    Rip,
+    Rflags,
 }
 
 /// A snapshot of integer-register state at one position.
 #[derive(Debug, Clone, Default)]
 pub struct Registers {
-    pub rax: u64, pub rbx: u64, pub rcx: u64, pub rdx: u64,
-    pub rsi: u64, pub rdi: u64, pub rbp: u64, pub rsp: u64,
-    pub r8: u64,  pub r9: u64,  pub r10: u64, pub r11: u64,
-    pub r12: u64, pub r13: u64, pub r14: u64, pub r15: u64,
-    pub rip: u64, pub rflags: u64,
+    pub rax: u64,
+    pub rbx: u64,
+    pub rcx: u64,
+    pub rdx: u64,
+    pub rsi: u64,
+    pub rdi: u64,
+    pub rbp: u64,
+    pub rsp: u64,
+    pub r8: u64,
+    pub r9: u64,
+    pub r10: u64,
+    pub r11: u64,
+    pub r12: u64,
+    pub r13: u64,
+    pub r14: u64,
+    pub r15: u64,
+    pub rip: u64,
+    pub rflags: u64,
 }
 
 impl Registers {
     pub fn get(&self, reg: RegId) -> u64 {
         match reg {
-            RegId::Rax => self.rax, RegId::Rbx => self.rbx,
-            RegId::Rcx => self.rcx, RegId::Rdx => self.rdx,
-            RegId::Rsi => self.rsi, RegId::Rdi => self.rdi,
-            RegId::Rbp => self.rbp, RegId::Rsp => self.rsp,
-            RegId::R8  => self.r8,  RegId::R9  => self.r9,
-            RegId::R10 => self.r10, RegId::R11 => self.r11,
-            RegId::R12 => self.r12, RegId::R13 => self.r13,
-            RegId::R14 => self.r14, RegId::R15 => self.r15,
-            RegId::Rip => self.rip, RegId::Rflags => self.rflags,
+            RegId::Rax => self.rax,
+            RegId::Rbx => self.rbx,
+            RegId::Rcx => self.rcx,
+            RegId::Rdx => self.rdx,
+            RegId::Rsi => self.rsi,
+            RegId::Rdi => self.rdi,
+            RegId::Rbp => self.rbp,
+            RegId::Rsp => self.rsp,
+            RegId::R8 => self.r8,
+            RegId::R9 => self.r9,
+            RegId::R10 => self.r10,
+            RegId::R11 => self.r11,
+            RegId::R12 => self.r12,
+            RegId::R13 => self.r13,
+            RegId::R14 => self.r14,
+            RegId::R15 => self.r15,
+            RegId::Rip => self.rip,
+            RegId::Rflags => self.rflags,
         }
     }
 }
@@ -74,14 +111,25 @@ pub struct TerminationEvent {
 
 #[derive(Debug, Clone)]
 pub enum TerminationKind {
-    AccessViolation { access: MemoryAccessKind, address: u64 },
+    AccessViolation {
+        access: MemoryAccessKind,
+        address: u64,
+    },
     /// Process terminated via `__fastfail` / `RtlFailFast2`. The faulting
     /// RIP is always inside ntdll's report routine; the true root cause is
     /// upstream and must be located by walking back through user-mode frames.
     /// `noncontinuable` mirrors `EXCEPTION_NONCONTINUABLE` (flags bit 0).
-    FastFail { code: u32, noncontinuable: bool },
-    OtherException { code: u32, address: u64 },
-    NormalExit { code: u32 },
+    FastFail {
+        code: u32,
+        noncontinuable: bool,
+    },
+    OtherException {
+        code: u32,
+        address: u64,
+    },
+    NormalExit {
+        code: u32,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -140,12 +188,15 @@ pub trait TraceBackend {
 
     fn registers(&self, thread: ThreadId, position: Position) -> BackendResult<Registers>;
 
-    fn read_memory(
-        &self,
-        position: Position,
-        address: u64,
-        len: usize,
-    ) -> BackendResult<Vec<u8>>;
+    /// Read exactly `len` bytes from `address` at `position`.
+    ///
+    /// On success the returned `Vec<u8>` is guaranteed to have length
+    /// `len`. Implementations MUST return `Err(BackendError::OutOfRange)`
+    /// when only a prefix of the requested range is available (for
+    /// example when the read crosses an unmapped page); they MUST NOT
+    /// return a short buffer. Callers rely on the length invariant and
+    /// would otherwise read past the end of valid data.
+    fn read_memory(&self, position: Position, address: u64, len: usize) -> BackendResult<Vec<u8>>;
 
     fn stack(&self, thread: ThreadId, position: Position) -> BackendResult<Vec<RawFrame>>;
 
@@ -160,5 +211,5 @@ pub trait TraceBackend {
     ) -> BackendResult<Option<WriteRecord>>;
 }
 
-pub mod mock;
 pub mod json_loader;
+pub mod mock;
