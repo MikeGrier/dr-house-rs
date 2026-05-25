@@ -218,8 +218,14 @@ fn format_instruction(insn: &Instruction) -> String {
 fn memory_base_reg(insn: &Instruction) -> Option<RegId> {
     for i in 0..insn.op_count() {
         if insn.op_kind(i) == OpKind::Memory {
-            return iced_to_regid(insn.memory_base())
-                .or_else(|| iced_to_regid(insn.memory_index()));
+            // iced-x86 reports RIP-relative operands as base=RIP. RIP is the
+            // instruction pointer, not a pointer-carrying register, so treat
+            // it as "no base" and let the caller report None.
+            let base = match insn.memory_base() {
+                Register::RIP | Register::EIP => None,
+                other => iced_to_regid(other),
+            };
+            return base.or_else(|| iced_to_regid(insn.memory_index()));
         }
     }
     None
