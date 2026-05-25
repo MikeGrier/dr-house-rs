@@ -151,9 +151,9 @@ try {
     }
     Write-Host "✓ SDK installed at $(Resolve-Path $SdkOutputPath)" -ForegroundColor $successColor
 
-    # Step 7st "Output location: $(Resolve-Path $outputDir)" -ForegroundColor $successColor
-    
-    # Step 6: Cleanup
+    Write-Host "✓ TTD binaries installed at $(Resolve-Path $outputDir)" -ForegroundColor $successColor
+
+    # Step 7: Cleanup
     Write-Host "`nStep 7: Cleaning up temporary files..." -ForegroundColor $infoColor
     Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
     Write-Host "Cleanup complete" -ForegroundColor $successColor
