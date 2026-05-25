@@ -6,18 +6,19 @@
 //! the rationale (separating "is our query API right?" from "did we get
 //! the FFI right?").
 
+use serde::{Deserialize, Serialize};
 use std::io;
 
 /// Opaque position in a trace. Comparable and serializable; otherwise
 /// the diagnostics layer does not interpret its internals.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct Position {
     pub sequence: u64,
     pub steps: u64,
 }
 
 /// Opaque thread identifier within a trace.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub struct ThreadId(pub u32);
 
 /// Architecture-neutral register identifier.
@@ -25,7 +26,7 @@ pub struct ThreadId(pub u32);
 /// Initial coverage is x64. We use an enum (not a string) so callers
 /// cannot misspell register names and so the mock can exhaustively
 /// enumerate what it supports.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum RegId {
     Rax,
     Rbx,
@@ -132,7 +133,7 @@ pub enum TerminationKind {
     },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum MemoryAccessKind {
     Read,
     Write,

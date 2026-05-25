@@ -8,8 +8,9 @@
 //!   another.
 
 use crate::backend::{MemoryAccessKind, Position, RegId, ThreadId};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct InvestigationReport {
     pub summary: String,
     pub root_cause: RootCause,
@@ -17,7 +18,7 @@ pub struct InvestigationReport {
     pub stack: Vec<FrameSummary>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RootCause {
     NullPointerDereference {
         /// Pointer-carrying register identified as the source of the
@@ -34,7 +35,7 @@ pub enum RootCause {
     },
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FaultDetails {
     pub thread: ThreadId,
     pub position: Position,
@@ -44,7 +45,7 @@ pub struct FaultDetails {
     pub instruction_text: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FrameSummary {
     pub ip: u64,
     pub sp: u64,
