@@ -442,12 +442,13 @@ mod tests {
         let path = std::env::var_os("MORGAGNI_RUN")
             .map(std::path::PathBuf::from)
             .or_else(|| {
-                let p = std::path::Path::new("../../fixtures/null-deref-x64.run");
-                if p.exists() {
-                    Some(p.to_path_buf())
-                } else {
-                    None
-                }
+                // Anchor the default fixture to the repo, not CWD: cargo
+                // runs tests with CWD = crate dir in some configurations
+                // and = workspace root in others, so a relative path is
+                // unreliable. CARGO_MANIFEST_DIR is this crate's directory.
+                let p = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .join("../../fixtures/null-deref-x64.run");
+                if p.exists() { Some(p) } else { None }
             })?;
         match RunTrace::from_path(&path) {
             Ok(t) => Some(t),
