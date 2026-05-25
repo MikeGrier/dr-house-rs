@@ -211,11 +211,15 @@ fn format_instruction(insn: &Instruction) -> String {
     out
 }
 
-/// Find the base register of the first memory operand in `insn`, if any.
+/// Find the register most likely to carry the (null) pointer for the first
+/// memory operand in `insn`: prefer the base register, fall back to the index
+/// register when there is no base (e.g. `mov rax, [rcx*8]`). Returns `None`
+/// when neither is present (pure absolute or rip-relative addressing).
 fn memory_base_reg(insn: &Instruction) -> Option<RegId> {
     for i in 0..insn.op_count() {
         if insn.op_kind(i) == OpKind::Memory {
-            return iced_to_regid(insn.memory_base());
+            return iced_to_regid(insn.memory_base())
+                .or_else(|| iced_to_regid(insn.memory_index()));
         }
     }
     None
