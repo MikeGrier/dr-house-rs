@@ -40,17 +40,20 @@ std::unordered_map<uint64_t, EngineSlot> g_engines;
 std::unordered_map<uint64_t, CursorSlot> g_cursors;
 std::atomic<uint64_t> g_next_handle{1};
 
-EngineSlot* slot_for(DhttdEngineHandle h) {
+// Looks up the raw engine pointer for `h` while holding `g_mutex`. The
+// returned pointer is owned by the slot's UniqueReplayEngine; callers must
+// guarantee that `dhttd_engine_destroy(h)` is not invoked concurrently with
+// any other API on the same handle. The registry mutex only protects map
+// structure (against rehashes during concurrent create/destroy of *other*
+// handles); it does not extend the lifetime of the engine object itself.
+IReplayEngine* engine_for(DhttdEngineHandle h) {
     std::lock_guard<std::mutex> lk(g_mutex);
     auto it = g_engines.find(h);
-    return it == g_engines.end() ? nullptr : &it->second;
+    return it == g_engines.end() ? nullptr : it->second.engine.get();
 }
 
-IReplayEngine* engine_for(DhttdEngineHandle h) {
-    EngineSlot* s = slot_for(h);
-    return s ? s->engine.get() : nullptr;
-}
-
+// Same contract as `engine_for`: lookup is locked, but the cursor's lifetime
+// is the caller's responsibility (don't race destroy with use).
 ICursor* cursor_for(DhttdCursorHandle h) {
     std::lock_guard<std::mutex> lk(g_mutex);
     auto it = g_cursors.find(h);
