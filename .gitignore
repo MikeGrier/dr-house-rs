@@ -35,6 +35,10 @@ Thumbs.db
 extension/resources/ttd/
 !extension/resources/ttd/.gitkeep
 
+# TTD Replay API SDK (downloaded at build time by download-ttd.ps1, not committed)
+extension/resources/ttd-sdk/
+!extension/resources/ttd-sdk/.gitkeep
+
 # RustRover
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
